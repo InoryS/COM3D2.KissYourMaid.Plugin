@@ -12,294 +12,354 @@ using System.Collections.Generic;
 
 [assembly: AssemblyTitle("KissYourMaid")]
 [assembly: AssemblyVersion("0.2.1.1")]
+
 namespace COM3D2.KissYourMaid.Plugin
 {
     [
-        PluginFilter("COM3D2x64"), PluginFilter("COM3D2VRx64"), PluginFilter("COM3D2OHx64"), PluginFilter("COM3D2OHVRx64"),
+        PluginFilter("COM3D2x64"), PluginFilter("COM3D2VRx64"), PluginFilter("COM3D2OHx64"),
+        PluginFilter("COM3D2OHVRx64"),
         PluginName("KissYourMaid"), PluginVersion("0.2.1.1")
     ]
     public class KissYourMaid : ExPluginBase
     {
-
         //　設定クラス（Iniファイルで読み書きしたい変数はここに格納する）
         class KissYourMaidConfig
         {
             //　キー設定
-            public KeyCode keyPluginToggle = KeyCode.H;             //　本プラグインの有効無効の切替キー（手動操作にも使う）
-            public KeyCode keyManualForceAlt = KeyCode.Mouse2;      //　（切替キーとの同時押し）パターンを変える
-            public KeyCode keyManualIncrease = KeyCode.Mouse1;      //　（手替キーとの同時押し）激しめにする
-            public KeyCode keyManualDecrease = KeyCode.Mouse0;      //　（切替キーとの同時押し）おとなしめにする
+            public KeyCode keyPluginToggle = KeyCode.H; //　本プラグインの有効無効の切替キー（手動操作にも使う）
+            public KeyCode keyManualForceAlt = KeyCode.Mouse2; //　（切替キーとの同時押し）パターンを変える
+            public KeyCode keyManualIncrease = KeyCode.Mouse1; //　（手替キーとの同時押し）激しめにする
+            public KeyCode keyManualDecrease = KeyCode.Mouse0; //　（切替キーとの同時押し）おとなしめにする
 
             //　一般設定
 
-            public bool bPluginEnabled = true;                 //　本プラグインの有効状態（夜伽）      
-            public bool bPluginEnabledInEdit = true;           //　本プラグインの有効状態（エディット）
-            public bool bVoiceOverrideEnabled = true;          //　キス時の音声オーバライド（上書き）機能を使う
-            public bool bDontLookAtMeInFellatio = false;       //　フェラ時に目の追従を行わせない
-            public int iYodareAppearLevel = 0;                 //　所定の興奮レベル以上でよだれをつける（１～４のどれかを入れる、０で無効） 
-            public int iExciteLevelThreshold1 = 150;           //　興奮レベル１→２閾値
-            public int iExciteLevelThreshold2 = 200;           //　興奮レベル２→３閾値
-            public int iExciteLevelThreshold3 = 250;           //　興奮レベル３→４閾値
-            
-            public bool bPluginValidADV = true;                //  シーンID=15 (SceenADV)をすべて有効にする
-            public bool bPluginValidEvent = true;              //  回想、訓練イベント、ライフモード等の会話系のシーンで有効にする
-            public bool bPluginValidPrivate = true;            //  ホーム、プライベート、嫁イドイベントで有効にする
-            public bool bPluginValidGuest = true;              //  ゲストモードで有効にする
+            public bool bPluginEnabled = true; //　本プラグインの有効状態（夜伽）
+            public bool bPluginEnabledInEdit = true; //　本プラグインの有効状態（エディット）
+            public bool bVoiceOverrideEnabled = true; //　キス時の音声オーバライド（上書き）機能を使う
+            public bool bDontLookAtMeInFellatio = false; //　フェラ時に目の追従を行わせない
+            public int iYodareAppearLevel = 0; //　所定の興奮レベル以上でよだれをつける（１～４のどれかを入れる、０で無効）
+            public int iExciteLevelThreshold1 = 150; //　興奮レベル１→２閾値
+            public int iExciteLevelThreshold2 = 200; //　興奮レベル２→３閾値
+            public int iExciteLevelThreshold3 = 250; //　興奮レベル３→４閾値
 
-            public int iFpsMax = 60;                           //最大Fps 処理間隔や表情変更の秒数に影響
-            public int iFpsMaxVR = 90;                         //VRのFps 処理間隔や表情変更の秒数に影響
+            public bool bPluginValidADV = true; //  シーンID=15 (SceenADV)をすべて有効にする
+            public bool bPluginValidEvent = true; //  回想、訓練イベント、ライフモード等の会話系のシーンで有効にする
+            public bool bPluginValidPrivate = true; //  ホーム、プライベート、嫁イドイベントで有効にする
+            public bool bPluginValidGuest = true; //  ゲストモードで有効にする
+
+            public int iFpsMax = 60; //最大Fps 処理間隔や表情変更の秒数に影響
+            public int iFpsMaxVR = 90; //VRのFps 処理間隔や表情変更の秒数に影響
 
             //　不機嫌モード・顔目そらし設定
-            public bool bFukigenEnabled = false;               //　不機嫌モードの有効状態
-            public bool bOnRestoreLookAtMe = true;             //　離れた時にこちらを見る様にするか
-            public int iPercentLookAway = 0;                   //　顔目そらし確率
-            public int iPercentLookAwayFukigen = 100;          //　顔目そらし確率（不機嫌モード）
-            public int iPercentLookAwayOtherParts = 50;        //　顔目そらし確率（口以外の部位へのキス時）
-            public bool bLookAwayOnlyEye = false;              //　顔目そらしの際、目だけそらすか
-            public bool bLookAwayOnlyEyeFukigen = false;       //　顔目そらしの際、目だけそらすか（不機嫌モード）
-            public bool bLookAwayOnlyEyeOtherParts = false;    //　顔目そらしの際、目だけそらすか（口以外の部位へのキス時）
+            public bool bFukigenEnabled = false; //　不機嫌モードの有効状態
+            public bool bOnRestoreLookAtMe = true; //　離れた時にこちらを見る様にするか
+            public int iPercentLookAway = 0; //　顔目そらし確率
+            public int iPercentLookAwayFukigen = 100; //　顔目そらし確率（不機嫌モード）
+            public int iPercentLookAwayOtherParts = 50; //　顔目そらし確率（口以外の部位へのキス時）
+            public bool bLookAwayOnlyEye = false; //　顔目そらしの際、目だけそらすか
+            public bool bLookAwayOnlyEyeFukigen = false; //　顔目そらしの際、目だけそらすか（不機嫌モード）
+            public bool bLookAwayOnlyEyeOtherParts = false; //　顔目そらしの際、目だけそらすか（口以外の部位へのキス時）
 
             //　口以外へのキス
-            public bool bTargetOtherParts = true;              //　口以外の部位へのキスを有効にする
-            public bool bTargetMune = true;                    //　胸へのキスを有効にする
-            public bool bTargetKokan = true;                   //　股間へのキスを有効にする
-            public bool bTargetFoots = false;                  //　足へのキスを有効にする（デフォルトでは無効、使わない人には邪魔だと思うので）
+            public bool bTargetOtherParts = true; //　口以外の部位へのキスを有効にする
+            public bool bTargetMune = true; //　胸へのキスを有効にする
+            public bool bTargetKokan = true; //　股間へのキスを有効にする
+            public bool bTargetFoots = false; //　足へのキスを有効にする（デフォルトでは無効、使わない人には邪魔だと思うので）
 
             //　痙攣設定
-            public bool bConvulsionEnabled = true;             //　（口以外の部位へのキス時の）痙攣を有効にする
-            public int iConvulsionChancePercentExcite1 = 20;   //  興奮度１の時の痙攣確率（0.5秒毎にチェック）
-            public int iConvulsionChancePercentExcite2 = 30;   //  興奮度２の時の痙攣確率（0.5秒毎にチェック）
-            public int iConvulsionChancePercentExcite3 = 40;   //  興奮度３の時の痙攣確率（0.5秒毎にチェック）
-            public int iConvulsionChancePercentExcite4 = 50;   //  興奮度４の時の痙攣確率（0.5秒毎にチェック）
-            public int iConvulsionTimeFramesBase = 7;                    //　痙攣時間（フレーム数）
-            public int iConvulsionTimeFramesBaseRandomExtend = 3;        //　痙攣時間へのランダム加算
-            public float fConvulsionSpeedMultiplierBase = 7.0f;          //　痙攣でのアニメーション速度倍率
-            public float fConvulsionSpeedMultiplierRandomExtend = 3.0f;  //　痙攣でのアニメーション速度倍率へのランダム加算
-            
+            public bool bConvulsionEnabled = true; //　（口以外の部位へのキス時の）痙攣を有効にする
+            public int iConvulsionChancePercentExcite1 = 20; //  興奮度１の時の痙攣確率（0.5秒毎にチェック）
+            public int iConvulsionChancePercentExcite2 = 30; //  興奮度２の時の痙攣確率（0.5秒毎にチェック）
+            public int iConvulsionChancePercentExcite3 = 40; //  興奮度３の時の痙攣確率（0.5秒毎にチェック）
+            public int iConvulsionChancePercentExcite4 = 50; //  興奮度４の時の痙攣確率（0.5秒毎にチェック）
+            public int iConvulsionTimeFramesBase = 7; //　痙攣時間（フレーム数）
+            public int iConvulsionTimeFramesBaseRandomExtend = 3; //　痙攣時間へのランダム加算
+            public float fConvulsionSpeedMultiplierBase = 7.0f; //　痙攣でのアニメーション速度倍率
+            public float fConvulsionSpeedMultiplierRandomExtend = 3.0f; //　痙攣でのアニメーション速度倍率へのランダム加算
+
 
             //　距離判定
-            public float fDistanceThresholdBase1 = 0.60f;      //　「近い」の判定距離
-            public float fDistanceThresholdBase2 = 0.40f;      //　「とても近い」の距離距離
-            public float fDistanceThresholdOffset = 0.20f;     //　 帰り方向で判定距離をずらす距離
-            public float fDistanceThresholdBase1VR = 0.45f;    //　(VR時)「近い」の判定距離
-            public float fDistanceThresholdBase2VR = 0.30f;    //　(VR時)「とても近い」の距離距離
-            public float fDistanceThresholdOffsetVR = 0.10f;   //　(VR時)帰り方向で判定距離をずらす距離
+            public float fDistanceThresholdBase1 = 0.60f; //　「近い」の判定距離
+            public float fDistanceThresholdBase2 = 0.40f; //　「とても近い」の距離距離
+            public float fDistanceThresholdOffset = 0.20f; //　 帰り方向で判定距離をずらす距離
+            public float fDistanceThresholdBase1VR = 0.45f; //　(VR時)「近い」の判定距離
+            public float fDistanceThresholdBase2VR = 0.30f; //　(VR時)「とても近い」の距離距離
+            public float fDistanceThresholdOffsetVR = 0.10f; //　(VR時)帰り方向で判定距離をずらす距離
 
-            public float fCheckOffsetHead = -0.01f;            // 口と胸の近いほうの判定距離オフセット マイナスで口が近く判定される
-            public float fDistanceOffsetMune = -0.05f;         // 胸の「とても近い」判定距離オフセット マイナスで距離が短くなる
-            public float fDistanceOffsetKokan = -0.05f;        // 股間の「とても近い」判定距離オフセット マイナスで距離が短くなる
-            public float fDistanceOffsetFoot = 0f;             // 足の「とても近い」判定距離オフセット マイナスで距離が短くなる
+            public float fCheckOffsetHead = -0.01f; // 口と胸の近いほうの判定距離オフセット マイナスで口が近く判定される
+            public float fDistanceOffsetMune = -0.05f; // 胸の「とても近い」判定距離オフセット マイナスで距離が短くなる
+            public float fDistanceOffsetKokan = -0.05f; // 股間の「とても近い」判定距離オフセット マイナスで距離が短くなる
+            public float fDistanceOffsetFoot = 0f; // 足の「とても近い」判定距離オフセット マイナスで距離が短くなる
 
             //　表情管理
-            public int iStateAltTime1Base = 2;                 //　フェイスアニメの変化時間１（秒）（20→21の遷移、40→41の遷移）
-            public int iStateAltTime2Base = 6;                 //　フェイスアニメの変化時間２（秒）（30におけるランダム再遷移）
-            public int iStateAltTime1RandomExtend = 2;         //　変化時間１へのランダム加算（秒）
-            public int iStateAltTime2RandomExtend = 6;         //　変化時間２へのランダム加算（秒）
-            public float fAnimeFadeTime = 3.0f;                //　フェイスアニメ等のフェード時間（秒）
+            public int iStateAltTime1Base = 2; //　フェイスアニメの変化時間１（秒）（20→21の遷移、40→41の遷移）
+            public int iStateAltTime2Base = 6; //　フェイスアニメの変化時間２（秒）（30におけるランダム再遷移）
+            public int iStateAltTime1RandomExtend = 2; //　変化時間１へのランダム加算（秒）
+            public int iStateAltTime2RandomExtend = 6; //　変化時間２へのランダム加算（秒）
+            public float fAnimeFadeTime = 3.0f; //　フェイスアニメ等のフェード時間（秒）
 
             //　表情テーブル　（全性格共通）
             public string[] sFaceAnime20 = new string[] { "変更しない" };
             public string[] sFaceAnime21 = new string[] { "目口閉じ" };
             public string[] sFaceAnime40 = new string[] { "困った" };
-            public string[] sFaceAnime41 = new string[] { "優しさ" , "微笑み" };
-            public string[][] sFaceAnime30Excite = new string[][] { //口へのキス用
-            new string[] { "接吻" , "エロ羞恥２" , "ダンスキス" , "ダンス憂い" , "エロ舐め通常" , "閉じ舐め通常" },
-            new string[] { "閉じフェラ通常" , "エロ好感３" , "エロ羞恥３" , "エロ舐め快楽" , "閉じフェラ愛情" , "閉じ舐め愛情" },
-            new string[] { "まぶたギュ" , "エロ舌責" , "エロ痛み３" , "エロ舐め愛情" , "エロ舐め嫌悪" , "閉じ舐め快楽" },
-            new string[] { "エロ痛み我慢３" , "エロ興奮３" , "エロ舌責快楽" , "閉じフェラ嫌悪" , "閉じ舐め嫌悪" , "エロ痛み２" }
+            public string[] sFaceAnime41 = new string[] { "優しさ", "微笑み" };
+
+            public string[][] sFaceAnime30Excite = new string[][]
+            {
+                //口へのキス用
+                new string[] { "接吻", "エロ羞恥２", "ダンスキス", "ダンス憂い", "エロ舐め通常", "閉じ舐め通常" },
+                new string[] { "閉じフェラ通常", "エロ好感３", "エロ羞恥３", "エロ舐め快楽", "閉じフェラ愛情", "閉じ舐め愛情" },
+                new string[] { "まぶたギュ", "エロ舌責", "エロ痛み３", "エロ舐め愛情", "エロ舐め嫌悪", "閉じ舐め快楽" },
+                new string[] { "エロ痛み我慢３", "エロ興奮３", "エロ舌責快楽", "閉じフェラ嫌悪", "閉じ舐め嫌悪", "エロ痛み２" }
             };
 
-            public string[][] sFaceAnime30ExciteMune = new string[][] { //口以外へのキス用
-            new string[] { "困った" , "ダンス困り顔" , "恥ずかしい" , "苦笑い" , "ためいき" , "まぶたギュ" },
-            new string[] { "怒り" , "興奮射精後１" , "発情" , "エロ痛み２" , "あーん", "エロ我慢３" },
-            new string[] { "エロ痛み１" , "エロ痛み２" , "エロ我慢１" , "エロ我慢２" , "泣き" , "怒り" },
-            new string[] { "エロ痛み我慢" , "エロ痛み我慢２" , "エロ痛み我慢３" , "エロメソ泣き" , "エロ羞恥３" , "エロ我慢３" },
+            public string[][] sFaceAnime30ExciteMune = new string[][]
+            {
+                //口以外へのキス用
+                new string[] { "困った", "ダンス困り顔", "恥ずかしい", "苦笑い", "ためいき", "まぶたギュ" },
+                new string[] { "怒り", "興奮射精後１", "発情", "エロ痛み２", "あーん", "エロ我慢３" },
+                new string[] { "エロ痛み１", "エロ痛み２", "エロ我慢１", "エロ我慢２", "泣き", "怒り" },
+                new string[] { "エロ痛み我慢", "エロ痛み我慢２", "エロ痛み我慢３", "エロメソ泣き", "エロ羞恥３", "エロ我慢３" },
             };
 
             //　表情テーブル　（全性格共通）　不機嫌モード
             public string[] sFaceAnime20Fukigen = new string[] { "恥ずかしい", "照れ", "拗ね" };
-            public string[] sFaceAnime21Fukigen = new string[] { "ぷんすか"};
+            public string[] sFaceAnime21Fukigen = new string[] { "ぷんすか" };
             public string[] sFaceAnime40Fukigen = new string[] { "困った", "泣き", "ダンス憂い" };
             public string[] sFaceAnime41Fukigen = new string[] { "恥ずかしい", "怒り", "拗ね", "ダンスジト目" };
 
-            public string[][] sFaceAnime30FukigenExcite = new string[][] { //口へのキス用
-            new string[] { "怒り" , "エロ羞恥２" , "エロ我慢２" , "エロ痛み我慢" , "エロフェラ嫌悪", "閉じ舐め嫌悪" },
-            new string[] { "閉じフェラ嫌悪" , "エロ我慢３" , "エロ羞恥３" , "エロ痛み我慢２", "エロ舐め嫌悪", "少し怒り" },
-            new string[] { "まぶたギュ" , "エロ舌責" , "エロ痛み３" , "エロ舐め愛情" , "エロ舐め嫌悪" , "エロフェラ嫌悪" },
-            new string[] { "エロ痛み我慢３" , "エロ興奮３" , "エロ舌責快楽" , "閉じフェラ嫌悪" , "閉じ舐め嫌悪" , "エロ痛み２" }
+            public string[][] sFaceAnime30FukigenExcite = new string[][]
+            {
+                //口へのキス用
+                new string[] { "怒り", "エロ羞恥２", "エロ我慢２", "エロ痛み我慢", "エロフェラ嫌悪", "閉じ舐め嫌悪" },
+                new string[] { "閉じフェラ嫌悪", "エロ我慢３", "エロ羞恥３", "エロ痛み我慢２", "エロ舐め嫌悪", "少し怒り" },
+                new string[] { "まぶたギュ", "エロ舌責", "エロ痛み３", "エロ舐め愛情", "エロ舐め嫌悪", "エロフェラ嫌悪" },
+                new string[] { "エロ痛み我慢３", "エロ興奮３", "エロ舌責快楽", "閉じフェラ嫌悪", "閉じ舐め嫌悪", "エロ痛み２" }
             };
 
-            public string[][] sFaceAnime30FukigenExciteMune = new string[][] { //口以外へのキス用
-            new string[] { "困った" , "ダンス困り顔" , "恥ずかしい" , "苦笑い" , "ためいき" , "まぶたギュ" },
-            new string[] { "怒り" , "興奮射精後１" , "発情" , "エロ痛み２" , "あーん", "エロ我慢３" },
-            new string[] { "エロ痛み１" , "エロ痛み２" , "エロ我慢１" , "エロ我慢２" , "泣き" , "怒り" },
-            new string[] { "エロ痛み我慢" , "エロ痛み我慢２" , "エロ痛み我慢３" , "エロメソ泣き" , "エロ羞恥３" , "エロ我慢３" },
+            public string[][] sFaceAnime30FukigenExciteMune = new string[][]
+            {
+                //口以外へのキス用
+                new string[] { "困った", "ダンス困り顔", "恥ずかしい", "苦笑い", "ためいき", "まぶたギュ" },
+                new string[] { "怒り", "興奮射精後１", "発情", "エロ痛み２", "あーん", "エロ我慢３" },
+                new string[] { "エロ痛み１", "エロ痛み２", "エロ我慢１", "エロ我慢２", "泣き", "怒り" },
+                new string[] { "エロ痛み我慢", "エロ痛み我慢２", "エロ痛み我慢３", "エロメソ泣き", "エロ羞恥３", "エロ我慢３" },
             };
 
             //　性格別声テーブル　通常版（興奮度別）
             //　キス抽送 *_rr_0003b.ks　と　フェラ抽送 *_rr_00084a.ks に記載の音声を振り分けた
 
-			// ツンデレ
-            public string[][] sLoopVoice30PrideExcite = new string[][] {
-            new string[] { "s0_01276.ogg" , "s0_01277.ogg" , "s0_01278.ogg" , "s0_01279.ogg" },
-            new string[] { "s0_01284.ogg" , "s0_01285.ogg" , "s0_01286.ogg" , "s0_01287.ogg" }, 
-            new string[] { "s0_01280.ogg" , "s0_01281.ogg" , "s0_01282.ogg" , "s0_01283.ogg" },
-            new string[] { "s0_01288.ogg" , "s0_01289.ogg" , "s0_01290.ogg" , "s0_01291.ogg" },
-            };
-			// クーデレ
-            public string[][] sLoopVoice30CoolExcite = new string[][] {
-            new string[] { "s1_02349.ogg" , "s1_02350.ogg" , "s1_02351.ogg" , "s1_02352.ogg" },
-            new string[] { "s1_02357.ogg" , "s1_02358.ogg" , "s1_02359.ogg" , "s1_02360.ogg" },
-            new string[] { "s1_02353.ogg" , "s1_02354.ogg" , "s1_02355.ogg" , "s1_02356.ogg" },
-            new string[] { "s1_02361.ogg" , "s1_02362.ogg" , "s1_02363.ogg" , "s1_02364.ogg" },
-            };
-			// 純真
-            public string[][] sLoopVoice30PureExcite = new string[][] {
-            new string[] { "s2_01190.ogg" , "s2_01191.ogg" , "s2_01192.ogg" , "s2_01193.ogg" },
-            new string[] { "s2_01198.ogg" , "s2_01199.ogg" , "s2_01200.ogg" , "s2_01201.ogg" },
-            new string[] { "s2_01194.ogg" , "s2_01195.ogg" , "s2_01196.ogg" , "s2_01197.ogg" },
-            new string[] { "s2_01202.ogg" , "s2_01203.ogg" , "s2_01204.ogg" , "s2_01205.ogg" },
-            };
-			// ヤンデレ
-            public string[][] sLoopVoice30YandereExcite = new string[][] {
-            new string[] { "s3_12044.ogg" , "s3_02728.ogg" , "s3_02729.ogg" , "s3_02730.ogg" }, //s3_02727.ogg → s3_12044.ogg
-            new string[] { "s3_02735.ogg" , "s3_02736.ogg" , "s3_02737.ogg" , "s3_02738.ogg" },
-            new string[] { "s3_02731.ogg" , "s3_02732.ogg" , "s3_02733.ogg" , "s3_02734.ogg" },
-            new string[] { "s3_02739.ogg" , "s3_02740.ogg" , "s3_02741.ogg" , "s3_02742.ogg" },
-            };
-			// お姉ちゃん
-            public string[][] sLoopVoice30AnesanExcite = new string[][] {
-            new string[] { "s4_08167.ogg" , "s4_08168.ogg" , "s4_08169.ogg" , "s4_08170.ogg" }, 
-            new string[] { "s4_08175.ogg" , "s4_08176.ogg" , "s4_08177.ogg" , "s4_08178.ogg" },
-            new string[] { "s4_08171.ogg" , "s4_08172.ogg" , "s4_08173.ogg" , "s4_08174.ogg" },
-            new string[] { "s4_08179.ogg" , "s4_08180.ogg" , "s4_08181.ogg" , "s4_08182.ogg" }, 
-            };
-			// ボクッ娘
-            public string[][] sLoopVoice30GenkiExcite = new string[][] {
-            new string[] { "s5_04087.ogg" , "s5_04088.ogg" , "s5_04089.ogg" , "s5_04090.ogg" },
-            new string[] { "s5_04095.ogg" , "s5_04096.ogg" , "s5_04097.ogg" , "s5_04098.ogg" },
-            new string[] { "s5_04091.ogg" , "s5_04092.ogg" , "s5_04093.ogg" , "s5_04094.ogg" },
-            new string[] { "s5_04099.ogg" , "s5_04100.ogg" , "s5_04101.ogg" , "s5_04102.ogg" },
-            };
-			// ドＳ
-            public string[][] sLoopVoice30SadistExcite = new string[][] { // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
-            new string[] { "s6_02219.ogg" , "s6_02220.ogg" , "s6_02221.ogg" , "s6_02222.ogg" }, // g_rr_0003b.ks  の前半４つ 
-            new string[] { "s6_02227.ogg" , "s6_02228.ogg" , "s6_02229.ogg" , "s6_02230.ogg" }, // g_rr_00084a.ks の前半４つ
-            new string[] { "s6_02223.ogg" , "s6_02224.ogg" , "s6_02225.ogg" , "s6_02226.ogg" }, // g_rr_0003b.ks  の後半４つ
-            new string[] { "s6_02231.ogg" , "s6_02232.ogg" , "s6_02233.ogg" , "s6_02234.ogg" }, // g_rr_00084a.ks の後半４つ
+            // ツンデレ
+            public string[][] sLoopVoice30PrideExcite = new string[][]
+            {
+                new string[] { "s0_01276.ogg", "s0_01277.ogg", "s0_01278.ogg", "s0_01279.ogg" },
+                new string[] { "s0_01284.ogg", "s0_01285.ogg", "s0_01286.ogg", "s0_01287.ogg" },
+                new string[] { "s0_01280.ogg", "s0_01281.ogg", "s0_01282.ogg", "s0_01283.ogg" },
+                new string[] { "s0_01288.ogg", "s0_01289.ogg", "s0_01290.ogg", "s0_01291.ogg" },
             };
 
-			// 無垢
-            public string[][] sLoopVoice30MukuExcite = new string[][] { // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
-            new string[] { "H0_00093.ogg" , "H0_00094.ogg" }, //ca003aキス(L0-L3)
-            new string[] { "H0_00095.ogg" , "H0_00096.ogg" },
-            new string[] { "H0_00097.ogg" , "H0_00253.ogg" }, //ca003aキス(L4) + ca003k発情フェラ(L0-L2)
-            new string[] { "H0_00254.ogg" , "H0_00255.ogg" }, 
+            // クーデレ
+            public string[][] sLoopVoice30CoolExcite = new string[][]
+            {
+                new string[] { "s1_02349.ogg", "s1_02350.ogg", "s1_02351.ogg", "s1_02352.ogg" },
+                new string[] { "s1_02357.ogg", "s1_02358.ogg", "s1_02359.ogg", "s1_02360.ogg" },
+                new string[] { "s1_02353.ogg", "s1_02354.ogg", "s1_02355.ogg", "s1_02356.ogg" },
+                new string[] { "s1_02361.ogg", "s1_02362.ogg", "s1_02363.ogg", "s1_02364.ogg" },
             };
-			// 真面目
-            public string[][] sLoopVoice30MajimeExcite = new string[][] { // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
-            new string[] { "H1_00265.ogg" , "H1_00266.ogg" },
-            new string[] { "H1_00267.ogg" , "H1_00268.ogg" },
-            new string[] { "H1_00269.ogg" , "H1_00270.ogg" },
-            new string[] { "H1_00271.ogg" , "H1_00272.ogg" },
+
+            // 純真
+            public string[][] sLoopVoice30PureExcite = new string[][]
+            {
+                new string[] { "s2_01190.ogg", "s2_01191.ogg", "s2_01192.ogg", "s2_01193.ogg" },
+                new string[] { "s2_01198.ogg", "s2_01199.ogg", "s2_01200.ogg", "s2_01201.ogg" },
+                new string[] { "s2_01194.ogg", "s2_01195.ogg", "s2_01196.ogg", "s2_01197.ogg" },
+                new string[] { "s2_01202.ogg", "s2_01203.ogg", "s2_01204.ogg", "s2_01205.ogg" },
             };
-			// 凜デレ
-            public string[][] sLoopVoice30RindereExcite = new string[][] { // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
-            new string[] { "H2_00067.ogg" , "H2_00068.ogg" },
-            new string[] { "H2_00069.ogg" , "H2_00070.ogg" },
-            new string[] { "H2_00071.ogg" , "H2_00072.ogg" },
-            new string[] { "H2_00073.ogg" , "H2_00074.ogg" },
+
+            // ヤンデレ
+            public string[][] sLoopVoice30YandereExcite = new string[][]
+            {
+                new string[]
+                    { "s3_12044.ogg", "s3_02728.ogg", "s3_02729.ogg", "s3_02730.ogg" }, //s3_02727.ogg → s3_12044.ogg
+                new string[] { "s3_02735.ogg", "s3_02736.ogg", "s3_02737.ogg", "s3_02738.ogg" },
+                new string[] { "s3_02731.ogg", "s3_02732.ogg", "s3_02733.ogg", "s3_02734.ogg" },
+                new string[] { "s3_02739.ogg", "s3_02740.ogg", "s3_02741.ogg", "s3_02742.ogg" },
             };
-			// 文学少女
-            public string[][] sLoopVoice30SilentExcite = new string[][] {
-            new string[] { "H3_00566.ogg" , "H3_00567.ogg" },
-            new string[] { "H3_00568.ogg" , "H3_00569.ogg" },
-            new string[] { "H3_00570.ogg" , "H3_00571.ogg" },
-            new string[] { "H3_00572.ogg" , "H3_00573.ogg" },
+
+            // お姉ちゃん
+            public string[][] sLoopVoice30AnesanExcite = new string[][]
+            {
+                new string[] { "s4_08167.ogg", "s4_08168.ogg", "s4_08169.ogg", "s4_08170.ogg" },
+                new string[] { "s4_08175.ogg", "s4_08176.ogg", "s4_08177.ogg", "s4_08178.ogg" },
+                new string[] { "s4_08171.ogg", "s4_08172.ogg", "s4_08173.ogg", "s4_08174.ogg" },
+                new string[] { "s4_08179.ogg", "s4_08180.ogg", "s4_08181.ogg", "s4_08182.ogg" },
             };
-			// 小悪魔
-            public string[][] sLoopVoice30DevilishExcite = new string[][] {
-            new string[] { "H4_00901.ogg" , "H4_00902.ogg" },
-            new string[] { "H4_00903.ogg" , "H4_00904.ogg" },
-            new string[] { "H4_00905.ogg" , "H4_00906.ogg" },
-            new string[] { "H4_00907.ogg" , "H4_00908.ogg" },
+
+            // ボクッ娘
+            public string[][] sLoopVoice30GenkiExcite = new string[][]
+            {
+                new string[] { "s5_04087.ogg", "s5_04088.ogg", "s5_04089.ogg", "s5_04090.ogg" },
+                new string[] { "s5_04095.ogg", "s5_04096.ogg", "s5_04097.ogg", "s5_04098.ogg" },
+                new string[] { "s5_04091.ogg", "s5_04092.ogg", "s5_04093.ogg", "s5_04094.ogg" },
+                new string[] { "s5_04099.ogg", "s5_04100.ogg", "s5_04101.ogg", "s5_04102.ogg" },
             };
-			// おしとやか
-            public string[][] sLoopVoice30LadylikeExcite = new string[][] {
-            new string[] { "H5_00640.ogg" , "H5_00641.ogg" },
-            new string[] { "H5_00642.ogg" , "H5_00643.ogg" },
-            new string[] { "H5_00644.ogg" , "H5_00645.ogg" },
-            new string[] { "H5_00646.ogg" , "H5_00647.ogg" },
+
+            // ドＳ
+            public string[][] sLoopVoice30SadistExcite = new string[][]
+            {
+                // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
+                new string[]
+                    { "s6_02219.ogg", "s6_02220.ogg", "s6_02221.ogg", "s6_02222.ogg" }, // g_rr_0003b.ks  の前半４つ
+                new string[] { "s6_02227.ogg", "s6_02228.ogg", "s6_02229.ogg", "s6_02230.ogg" }, // g_rr_00084a.ks の前半４つ
+                new string[] { "s6_02223.ogg", "s6_02224.ogg", "s6_02225.ogg", "s6_02226.ogg" }, // g_rr_0003b.ks  の後半４つ
+                new string[] { "s6_02231.ogg", "s6_02232.ogg", "s6_02233.ogg", "s6_02234.ogg" }, // g_rr_00084a.ks の後半４つ
             };
-			// メイド秘書
-            public string[][] sLoopVoice30SecretaryExcite = new string[][] {
-            new string[] { "H6_00206.ogg" , "H6_00207.ogg" },
-            new string[] { "H6_00208.ogg" , "H6_00209.ogg" },
-            new string[] { "H6_00210.ogg" , "H6_00211.ogg" },
-            new string[] { "H6_00212.ogg" , "H6_00213.ogg" },
+
+            // 無垢
+            public string[][] sLoopVoice30MukuExcite = new string[][]
+            {
+                // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
+                new string[] { "H0_00093.ogg", "H0_00094.ogg" }, //ca003aキス(L0-L3)
+                new string[] { "H0_00095.ogg", "H0_00096.ogg" },
+                new string[] { "H0_00097.ogg", "H0_00253.ogg" }, //ca003aキス(L4) + ca003k発情フェラ(L0-L2)
+                new string[] { "H0_00254.ogg", "H0_00255.ogg" },
             };
-			// 妹
-            public string[][] sLoopVoice30SisterExcite = new string[][] {
-            new string[] { "H7_02810.ogg" , "H7_02811.ogg" },
-            new string[] { "H7_02812.ogg" , "H7_02813.ogg" },
-            new string[] { "H7_02814.ogg" , "H7_02815.ogg" },
-            new string[] { "H7_02816.ogg" , "H7_02817.ogg" },
+
+            // 真面目
+            public string[][] sLoopVoice30MajimeExcite = new string[][]
+            {
+                // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
+                new string[] { "H1_00265.ogg", "H1_00266.ogg" },
+                new string[] { "H1_00267.ogg", "H1_00268.ogg" },
+                new string[] { "H1_00269.ogg", "H1_00270.ogg" },
+                new string[] { "H1_00271.ogg", "H1_00272.ogg" },
             };
-			// 無愛想
-            public string[][] sLoopVoice30CurtnessExcite = new string[][] {
-            new string[] { "H8_01179.ogg" , "H8_01180.ogg" },
-            new string[] { "H8_01181.ogg" , "H8_01182.ogg" },
-            new string[] { "H8_01183.ogg" , "H8_01184.ogg" },
-            new string[] { "H8_01185.ogg" , "H8_01186.ogg" },
+
+            // 凜デレ
+            public string[][] sLoopVoice30RindereExcite = new string[][]
+            {
+                // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
+                new string[] { "H2_00067.ogg", "H2_00068.ogg" },
+                new string[] { "H2_00069.ogg", "H2_00070.ogg" },
+                new string[] { "H2_00071.ogg", "H2_00072.ogg" },
+                new string[] { "H2_00073.ogg", "H2_00074.ogg" },
             };
-			// お嬢様
-            public string[][] sLoopVoice30MissyExcite = new string[][] {
-            new string[] { "H9_00618.ogg" , "H9_00619.ogg" },
-            new string[] { "H9_00620.ogg" , "H9_00621.ogg" },
-            new string[] { "H9_00622.ogg" , "H9_00623.ogg" },
-            new string[] { "H9_00624.ogg" , "H9_00625.ogg" },
+
+            // 文学少女
+            public string[][] sLoopVoice30SilentExcite = new string[][]
+            {
+                new string[] { "H3_00566.ogg", "H3_00567.ogg" },
+                new string[] { "H3_00568.ogg", "H3_00569.ogg" },
+                new string[] { "H3_00570.ogg", "H3_00571.ogg" },
+                new string[] { "H3_00572.ogg", "H3_00573.ogg" },
             };
-			// 幼馴染
-            public string[][] sLoopVoice30ChildhoodExcite = new string[][] {
-            new string[] { "H10_03889.ogg" , "H10_03890.ogg" },
-            new string[] { "H10_03891.ogg" , "H10_03892.ogg" },
-            new string[] { "H10_03893.ogg" , "H10_03894.ogg" },
-            new string[] { "H10_03895.ogg" , "H10_03896.ogg" },
+
+            // 小悪魔
+            public string[][] sLoopVoice30DevilishExcite = new string[][]
+            {
+                new string[] { "H4_00901.ogg", "H4_00902.ogg" },
+                new string[] { "H4_00903.ogg", "H4_00904.ogg" },
+                new string[] { "H4_00905.ogg", "H4_00906.ogg" },
+                new string[] { "H4_00907.ogg", "H4_00908.ogg" },
             };
+
+            // おしとやか
+            public string[][] sLoopVoice30LadylikeExcite = new string[][]
+            {
+                new string[] { "H5_00640.ogg", "H5_00641.ogg" },
+                new string[] { "H5_00642.ogg", "H5_00643.ogg" },
+                new string[] { "H5_00644.ogg", "H5_00645.ogg" },
+                new string[] { "H5_00646.ogg", "H5_00647.ogg" },
+            };
+
+            // メイド秘書
+            public string[][] sLoopVoice30SecretaryExcite = new string[][]
+            {
+                new string[] { "H6_00206.ogg", "H6_00207.ogg" },
+                new string[] { "H6_00208.ogg", "H6_00209.ogg" },
+                new string[] { "H6_00210.ogg", "H6_00211.ogg" },
+                new string[] { "H6_00212.ogg", "H6_00213.ogg" },
+            };
+
+            // 妹
+            public string[][] sLoopVoice30SisterExcite = new string[][]
+            {
+                new string[] { "H7_02810.ogg", "H7_02811.ogg" },
+                new string[] { "H7_02812.ogg", "H7_02813.ogg" },
+                new string[] { "H7_02814.ogg", "H7_02815.ogg" },
+                new string[] { "H7_02816.ogg", "H7_02817.ogg" },
+            };
+
+            // 無愛想
+            public string[][] sLoopVoice30CurtnessExcite = new string[][]
+            {
+                new string[] { "H8_01179.ogg", "H8_01180.ogg" },
+                new string[] { "H8_01181.ogg", "H8_01182.ogg" },
+                new string[] { "H8_01183.ogg", "H8_01184.ogg" },
+                new string[] { "H8_01185.ogg", "H8_01186.ogg" },
+            };
+
+            // お嬢様
+            public string[][] sLoopVoice30MissyExcite = new string[][]
+            {
+                new string[] { "H9_00618.ogg", "H9_00619.ogg" },
+                new string[] { "H9_00620.ogg", "H9_00621.ogg" },
+                new string[] { "H9_00622.ogg", "H9_00623.ogg" },
+                new string[] { "H9_00624.ogg", "H9_00625.ogg" },
+            };
+
+            // 幼馴染
+            public string[][] sLoopVoice30ChildhoodExcite = new string[][]
+            {
+                new string[] { "H10_03889.ogg", "H10_03890.ogg" },
+                new string[] { "H10_03891.ogg", "H10_03892.ogg" },
+                new string[] { "H10_03893.ogg", "H10_03894.ogg" },
+                new string[] { "H10_03895.ogg", "H10_03896.ogg" },
+            };
+
             // ドＭ
-            public string[][] sLoopVoice30MasochistExcite = new string[][] {
-            new string[] { "H11_00713.ogg" , "H11_00714.ogg" }, //ca003aキス(L0～L7)
-            new string[] { "H11_00715.ogg" , "H11_00716.ogg" },
-            new string[] { "H11_00717.ogg" , "H11_00718.ogg" },
-            new string[] { "H11_00719.ogg" , "H11_00720.ogg" }, 
+            public string[][] sLoopVoice30MasochistExcite = new string[][]
+            {
+                new string[] { "H11_00713.ogg", "H11_00714.ogg" }, //ca003aキス(L0～L7)
+                new string[] { "H11_00715.ogg", "H11_00716.ogg" },
+                new string[] { "H11_00717.ogg", "H11_00718.ogg" },
+                new string[] { "H11_00719.ogg", "H11_00720.ogg" },
             };
+
             // 腹黒
-            public string[][] sLoopVoice30CraftyExcite = new string[][] {
-            new string[] { "H12_01253.ogg" , "H12_01254.ogg" }, //ca003aキス(L0～L7)
-            new string[] { "H12_01255.ogg" , "H12_01256.ogg" },
-            new string[] { "H12_01257.ogg" , "H12_01258.ogg" },
-            new string[] { "H12_01259.ogg" , "H12_01260.ogg" }, 
+            public string[][] sLoopVoice30CraftyExcite = new string[][]
+            {
+                new string[] { "H12_01253.ogg", "H12_01254.ogg" }, //ca003aキス(L0～L7)
+                new string[] { "H12_01255.ogg", "H12_01256.ogg" },
+                new string[] { "H12_01257.ogg", "H12_01258.ogg" },
+                new string[] { "H12_01259.ogg", "H12_01260.ogg" },
             };
+
             // 気さく
-            public string[][] sLoopVoice30FriendlyExcite = new string[][] {
-            new string[] { "V1_00530.ogg" , "V1_00531.ogg" }, //ca003aキス(L0～L7)
-            new string[] { "V1_00532.ogg" , "V1_00533.ogg" },
-            new string[] { "V1_00534.ogg" , "V1_00535.ogg" },
-            new string[] { "V1_00536.ogg" , "V1_00537.ogg" },
+            public string[][] sLoopVoice30FriendlyExcite = new string[][]
+            {
+                new string[] { "V1_00530.ogg", "V1_00531.ogg" }, //ca003aキス(L0～L7)
+                new string[] { "V1_00532.ogg", "V1_00533.ogg" },
+                new string[] { "V1_00534.ogg", "V1_00535.ogg" },
+                new string[] { "V1_00536.ogg", "V1_00537.ogg" },
             };
+
             // 淑女
-            public string[][] sLoopVoice30DameExcite = new string[][] {
-            new string[] { "V0_00528.ogg" , "V0_00529.ogg" }, //ca003aキス(L0～L7)
-            new string[] { "V0_00530.ogg" , "V0_00531.ogg" },
-            new string[] { "V0_00532.ogg" , "V0_00533.ogg" },
-            new string[] { "V0_00534.ogg" , "V0_00535.ogg" }, 
+            public string[][] sLoopVoice30DameExcite = new string[][]
+            {
+                new string[] { "V0_00528.ogg", "V0_00529.ogg" }, //ca003aキス(L0～L7)
+                new string[] { "V0_00530.ogg", "V0_00531.ogg" },
+                new string[] { "V0_00532.ogg", "V0_00533.ogg" },
+                new string[] { "V0_00534.ogg", "V0_00535.ogg" },
             };
+
             //ギャル
-            public string[][] sLoopVoice30GalExcite = new string[][] {
-            new string[] { "H13_01084.ogg" , "H13_01085.ogg" }, //ca003aキス(L0～L7)
-            new string[] { "H13_01086.ogg" , "H13_01087.ogg" },
-            new string[] { "H13_01088.ogg" , "H13_01089.ogg" },
-            new string[] { "H13_01090.ogg" , "H13_01091.ogg" },
+            public string[][] sLoopVoice30GalExcite = new string[][]
+            {
+                new string[] { "H13_01084.ogg", "H13_01085.ogg" }, //ca003aキス(L0～L7)
+                new string[] { "H13_01086.ogg", "H13_01087.ogg" },
+                new string[] { "H13_01088.ogg", "H13_01089.ogg" },
+                new string[] { "H13_01090.ogg", "H13_01091.ogg" },
             };
 
             //　性格別声テーブル　キス以外の汎用（興奮度別）
@@ -308,329 +368,417 @@ namespace COM3D2.KissYourMaid.Plugin
             //　各スクリプトに８個の音声があったが、そのうち２つは苦悶で合わない様に感じたので除外した
             //　そのため興奮度レベル１と２のテーブルは、ChuBLipのテーブルのように使い回しに
 
-			// ツンデレ
-            public string[][] sLoopVoice30PrideMune = new string[][] {
-            new string[] { "S0_01316.ogg" , "S0_01317.ogg" },
-            new string[] { "S0_01318.ogg" , "S0_01319.ogg" }, 
-            new string[] { "S0_103950.ogg" , "S0_103951.ogg" },
-            new string[] { "S0_103952.ogg" , "S0_103953.ogg" },
-            };
-			// クーデレ
-            public string[][] sLoopVoice30CoolMune = new string[][] {
-            new string[] { "S1_02389.ogg" , "S1_02390.ogg" },
-            new string[] { "S1_02391.ogg" , "S1_02392.ogg" },
-            new string[] { "S1_102717.ogg" , "S1_102718.ogg" },
-            new string[] { "S1_102719.ogg" , "S1_102720.ogg" },
-            };
-			// 純真
-            public string[][] sLoopVoice30PureMune = new string[][] {
-            new string[] { "S2_01234.ogg" , "s2_01256.ogg" }, //ca002a待機(L4) + ca001i奉仕(L2)
-            new string[] { "S2_01235.ogg" , "s2_01257.ogg" }, //ca002a待機(L5) + ca001i奉仕(L3)
-            new string[] { "S2_01236.ogg" , "s2_01258.ogg" }, //ca002a待機(L6) + ca001i奉仕(L4)
-            new string[] { "S2_01237.ogg" , "s2_01259.ogg" }, //ca002a待機(L7) + ca001i奉仕(L5)
-            };
-			// ヤンデレ
-            public string[][] sLoopVoice30YandereMune = new string[][] {
-            new string[] { "S3_02767.ogg" , "S3_02768.ogg" },
-            new string[] { "S3_02769.ogg" , "S3_02770.ogg" },
-            new string[] { "S3_101125.ogg" , "S3_101126.ogg" },
-            new string[] { "S3_101127.ogg" , "S3_101128.ogg" },
-            };
-			// お姉ちゃん
-            public string[][] sLoopVoice30AnesanMune = new string[][] {
-            new string[] { "S4_08207.ogg" , "S4_08208.ogg" }, 
-            new string[] { "S4_08209.ogg" , "S4_08210.ogg" },
-            new string[] { "S4_102930.ogg" , "S4_102931.ogg" },
-            new string[] { "S4_102932.ogg" , "S4_102933.ogg" }, 
-            };
-			// ボクッ娘
-            public string[][] sLoopVoice30GenkiMune = new string[][] {
-            new string[] { "S5_04127.ogg" , "S5_04128.ogg" },
-            new string[] { "S5_04129.ogg" , "S5_04130.ogg" },
-            new string[] { "S5_102337.ogg" , "S5_102338.ogg" },
-            new string[] { "S5_102339.ogg" , "S5_102340.ogg" },
-            };
-			// ドＳ
-            public string[][] sLoopVoice30SadistMune = new string[][] {
-            new string[] { "S6_02259.ogg" , "S6_02260.ogg" },
-            new string[] { "S6_02261.ogg" , "S6_02262.ogg" },
-            new string[] { "S6_102978.ogg" , "S6_10297.ogg" },
-            new string[] { "S6_102980.ogg" , "S6_102981.ogg" },
+            // ツンデレ
+            public string[][] sLoopVoice30PrideMune = new string[][]
+            {
+                new string[] { "S0_01316.ogg", "S0_01317.ogg" },
+                new string[] { "S0_01318.ogg", "S0_01319.ogg" },
+                new string[] { "S0_103950.ogg", "S0_103951.ogg" },
+                new string[] { "S0_103952.ogg", "S0_103953.ogg" },
             };
 
-			// 無垢
-            public string[][] sLoopVoice30MukuMune = new string[][] {
-            new string[] { "H0_00237.ogg" , "H0_00238.ogg" , "H0_00135.ogg" },
-            new string[] { "H0_00239.ogg" , "H0_00240.ogg" , "H0_00136.ogg" },
-            new string[] { "H0_00229.ogg" , "H0_00230.ogg" },
-            new string[] { "H0_00231.ogg" , "H0_00232.ogg" }, 
+            // クーデレ
+            public string[][] sLoopVoice30CoolMune = new string[][]
+            {
+                new string[] { "S1_02389.ogg", "S1_02390.ogg" },
+                new string[] { "S1_02391.ogg", "S1_02392.ogg" },
+                new string[] { "S1_102717.ogg", "S1_102718.ogg" },
+                new string[] { "S1_102719.ogg", "S1_102720.ogg" },
             };
-			// 真面目
-            public string[][] sLoopVoice30MajimeMune = new string[][] {
-            new string[] { "H1_00409.ogg" , "H1_00410.ogg" },
-            new string[] { "H1_00411.ogg" , "H1_00412.ogg" },
-            new string[] { "H1_00401.ogg" , "H1_00402.ogg" },
-            new string[] { "H1_00403.ogg" , "H1_00404.ogg" },
+
+            // 純真
+            public string[][] sLoopVoice30PureMune = new string[][]
+            {
+                new string[] { "S2_01234.ogg", "s2_01256.ogg" }, //ca002a待機(L4) + ca001i奉仕(L2)
+                new string[] { "S2_01235.ogg", "s2_01257.ogg" }, //ca002a待機(L5) + ca001i奉仕(L3)
+                new string[] { "S2_01236.ogg", "s2_01258.ogg" }, //ca002a待機(L6) + ca001i奉仕(L4)
+                new string[] { "S2_01237.ogg", "s2_01259.ogg" }, //ca002a待機(L7) + ca001i奉仕(L5)
             };
-			// 凜デレ
-            public string[][] sLoopVoice30RindereMune = new string[][] {
-            new string[] { "H2_00211.ogg" , "H2_00212.ogg" },
-            new string[] { "H2_00213.ogg" , "H2_00214.ogg" },
-            new string[] { "H2_00203.ogg" , "H2_00204.ogg" },
-            new string[] { "H2_00205.ogg" , "H2_00206.ogg" },
+
+            // ヤンデレ
+            public string[][] sLoopVoice30YandereMune = new string[][]
+            {
+                new string[] { "S3_02767.ogg", "S3_02768.ogg" },
+                new string[] { "S3_02769.ogg", "S3_02770.ogg" },
+                new string[] { "S3_101125.ogg", "S3_101126.ogg" },
+                new string[] { "S3_101127.ogg", "S3_101128.ogg" },
             };
-			// 文学少女
-            public string[][] sLoopVoice30SilentMune = new string[][] {
-            new string[] { "H3_00742.ogg", "H3_00743.ogg" },
-            new string[] { "H3_00744.ogg", "H3_00745.ogg" },
-            new string[] { "H3_00734.ogg", "H3_00735.ogg" },
-            new string[] { "H3_00736.ogg", "H3_00737.ogg" },
+
+            // お姉ちゃん
+            public string[][] sLoopVoice30AnesanMune = new string[][]
+            {
+                new string[] { "S4_08207.ogg", "S4_08208.ogg" },
+                new string[] { "S4_08209.ogg", "S4_08210.ogg" },
+                new string[] { "S4_102930.ogg", "S4_102931.ogg" },
+                new string[] { "S4_102932.ogg", "S4_102933.ogg" },
             };
-			// 小悪魔
-            public string[][] sLoopVoice30DevilishMune = new string[][] {
-            new string[] { "H4_01077.ogg" , "H4_01078.ogg" },
-            new string[] { "H4_01079.ogg" , "H4_01080.ogg" },
-            new string[] { "H4_01069.ogg" , "H4_01070.ogg" },
-            new string[] { "H4_01071.ogg" , "H4_01072.ogg" },
+
+            // ボクッ娘
+            public string[][] sLoopVoice30GenkiMune = new string[][]
+            {
+                new string[] { "S5_04127.ogg", "S5_04128.ogg" },
+                new string[] { "S5_04129.ogg", "S5_04130.ogg" },
+                new string[] { "S5_102337.ogg", "S5_102338.ogg" },
+                new string[] { "S5_102339.ogg", "S5_102340.ogg" },
             };
-			// おしとやか
-            public string[][] sLoopVoice30LadylikeMune = new string[][] {
-            new string[] { "H5_00816.ogg" , "H5_00817.ogg" },
-            new string[] { "H5_00818.ogg" , "H5_00819.ogg" },
-            new string[] { "H5_00808.ogg" , "H5_00809.ogg" },
-            new string[] { "H5_00810.ogg" , "H5_00811.ogg" },
+
+            // ドＳ
+            public string[][] sLoopVoice30SadistMune = new string[][]
+            {
+                new string[] { "S6_02259.ogg", "S6_02260.ogg" },
+                new string[] { "S6_02261.ogg", "S6_02262.ogg" },
+                new string[] { "S6_102978.ogg", "S6_10297.ogg" },
+                new string[] { "S6_102980.ogg", "S6_102981.ogg" },
             };
-			// メイド秘書
-            public string[][] sLoopVoice30SecretaryMune = new string[][] {
-            new string[] { "H6_00382.ogg" , "H6_00383.ogg" },
-            new string[] { "H6_00384.ogg" , "H6_00385.ogg" },
-            new string[] { "H6_00374.ogg" , "H6_00375.ogg" },
-            new string[] { "H6_00376.ogg" , "H6_00377.ogg" },
+
+            // 無垢
+            public string[][] sLoopVoice30MukuMune = new string[][]
+            {
+                new string[] { "H0_00237.ogg", "H0_00238.ogg", "H0_00135.ogg" },
+                new string[] { "H0_00239.ogg", "H0_00240.ogg", "H0_00136.ogg" },
+                new string[] { "H0_00229.ogg", "H0_00230.ogg" },
+                new string[] { "H0_00231.ogg", "H0_00232.ogg" },
             };
-			// 妹
-            public string[][] sLoopVoice30SisterMune = new string[][] {
-            new string[] { "H7_02978.ogg" , "H7_02989.ogg" },
-            new string[] { "H7_02979.ogg" , "H7_02990.ogg" },
-            new string[] { "H7_02980.ogg" , "H7_02991.ogg" },
-            new string[] { "H7_02981.ogg" , "H7_02992.ogg" },
+
+            // 真面目
+            public string[][] sLoopVoice30MajimeMune = new string[][]
+            {
+                new string[] { "H1_00409.ogg", "H1_00410.ogg" },
+                new string[] { "H1_00411.ogg", "H1_00412.ogg" },
+                new string[] { "H1_00401.ogg", "H1_00402.ogg" },
+                new string[] { "H1_00403.ogg", "H1_00404.ogg" },
             };
-			// 無愛想
-            public string[][] sLoopVoice30CurtnessMune = new string[][] {
-            new string[] { "H8_01355.ogg" , "H8_01356.ogg" },
-            new string[] { "H8_01357.ogg" , "H8_01358.ogg" },
-            new string[] { "H8_01347.ogg" , "H8_01348.ogg" },
-            new string[] { "H8_01349.ogg" , "H8_01350.ogg" },
+
+            // 凜デレ
+            public string[][] sLoopVoice30RindereMune = new string[][]
+            {
+                new string[] { "H2_00211.ogg", "H2_00212.ogg" },
+                new string[] { "H2_00213.ogg", "H2_00214.ogg" },
+                new string[] { "H2_00203.ogg", "H2_00204.ogg" },
+                new string[] { "H2_00205.ogg", "H2_00206.ogg" },
             };
-			// お嬢様
-            public string[][] sLoopVoice30MissyMune = new string[][] {
-            new string[] { "H9_00794.ogg" , "H9_00795.ogg" },
-            new string[] { "H9_00796.ogg" , "H9_00797.ogg" },
-            new string[] { "H9_00786.ogg" , "H9_00787.ogg" },
-            new string[] { "H9_00788.ogg" , "H9_00789.ogg" },
+
+            // 文学少女
+            public string[][] sLoopVoice30SilentMune = new string[][]
+            {
+                new string[] { "H3_00742.ogg", "H3_00743.ogg" },
+                new string[] { "H3_00744.ogg", "H3_00745.ogg" },
+                new string[] { "H3_00734.ogg", "H3_00735.ogg" },
+                new string[] { "H3_00736.ogg", "H3_00737.ogg" },
             };
-			// 幼馴染
-            public string[][] sLoopVoice30ChildhoodMune = new string[][] {
-            new string[] { "H10_04065.ogg" , "H10_04066.ogg" },
-            new string[] { "H10_04067.ogg" , "H10_04068.ogg" },
-            new string[] { "H10_04057.ogg" , "H10_04058.ogg" },
-            new string[] { "H10_04059.ogg" , "H10_04060.ogg" },
+
+            // 小悪魔
+            public string[][] sLoopVoice30DevilishMune = new string[][]
+            {
+                new string[] { "H4_01077.ogg", "H4_01078.ogg" },
+                new string[] { "H4_01079.ogg", "H4_01080.ogg" },
+                new string[] { "H4_01069.ogg", "H4_01070.ogg" },
+                new string[] { "H4_01071.ogg", "H4_01072.ogg" },
             };
+
+            // おしとやか
+            public string[][] sLoopVoice30LadylikeMune = new string[][]
+            {
+                new string[] { "H5_00816.ogg", "H5_00817.ogg" },
+                new string[] { "H5_00818.ogg", "H5_00819.ogg" },
+                new string[] { "H5_00808.ogg", "H5_00809.ogg" },
+                new string[] { "H5_00810.ogg", "H5_00811.ogg" },
+            };
+
+            // メイド秘書
+            public string[][] sLoopVoice30SecretaryMune = new string[][]
+            {
+                new string[] { "H6_00382.ogg", "H6_00383.ogg" },
+                new string[] { "H6_00384.ogg", "H6_00385.ogg" },
+                new string[] { "H6_00374.ogg", "H6_00375.ogg" },
+                new string[] { "H6_00376.ogg", "H6_00377.ogg" },
+            };
+
+            // 妹
+            public string[][] sLoopVoice30SisterMune = new string[][]
+            {
+                new string[] { "H7_02978.ogg", "H7_02989.ogg" },
+                new string[] { "H7_02979.ogg", "H7_02990.ogg" },
+                new string[] { "H7_02980.ogg", "H7_02991.ogg" },
+                new string[] { "H7_02981.ogg", "H7_02992.ogg" },
+            };
+
+            // 無愛想
+            public string[][] sLoopVoice30CurtnessMune = new string[][]
+            {
+                new string[] { "H8_01355.ogg", "H8_01356.ogg" },
+                new string[] { "H8_01357.ogg", "H8_01358.ogg" },
+                new string[] { "H8_01347.ogg", "H8_01348.ogg" },
+                new string[] { "H8_01349.ogg", "H8_01350.ogg" },
+            };
+
+            // お嬢様
+            public string[][] sLoopVoice30MissyMune = new string[][]
+            {
+                new string[] { "H9_00794.ogg", "H9_00795.ogg" },
+                new string[] { "H9_00796.ogg", "H9_00797.ogg" },
+                new string[] { "H9_00786.ogg", "H9_00787.ogg" },
+                new string[] { "H9_00788.ogg", "H9_00789.ogg" },
+            };
+
+            // 幼馴染
+            public string[][] sLoopVoice30ChildhoodMune = new string[][]
+            {
+                new string[] { "H10_04065.ogg", "H10_04066.ogg" },
+                new string[] { "H10_04067.ogg", "H10_04068.ogg" },
+                new string[] { "H10_04057.ogg", "H10_04058.ogg" },
+                new string[] { "H10_04059.ogg", "H10_04060.ogg" },
+            };
+
             // ドＭ
-            public string[][] sLoopVoice30MasochistMune = new string[][] {
-            new string[] { "H11_00761.ogg" , "H11_00762.ogg" }, //ca002a待機
-            new string[] { "H11_00763.ogg" , "H11_00764.ogg" },
-            new string[] { "H11_00745.ogg" , "H11_00746.ogg" }, //ca003cオナニー
-            new string[] { "H11_00747.ogg" , "H11_00748.ogg" }, 
+            public string[][] sLoopVoice30MasochistMune = new string[][]
+            {
+                new string[] { "H11_00761.ogg", "H11_00762.ogg" }, //ca002a待機
+                new string[] { "H11_00763.ogg", "H11_00764.ogg" },
+                new string[] { "H11_00745.ogg", "H11_00746.ogg" }, //ca003cオナニー
+                new string[] { "H11_00747.ogg", "H11_00748.ogg" },
             };
+
             // 腹黒
-            public string[][] sLoopVoice30CraftyMune = new string[][] {
-            new string[] { "H12_01309.ogg" , "H12_01310.ogg" },
-            new string[] { "H12_01311.ogg" , "H12_01312.ogg" },
-            new string[] { "H12_01421.ogg" , "H12_01422.ogg" },
-            new string[] { "H12_01423.ogg" , "H12_01424.ogg" }, 
+            public string[][] sLoopVoice30CraftyMune = new string[][]
+            {
+                new string[] { "H12_01309.ogg", "H12_01310.ogg" },
+                new string[] { "H12_01311.ogg", "H12_01312.ogg" },
+                new string[] { "H12_01421.ogg", "H12_01422.ogg" },
+                new string[] { "H12_01423.ogg", "H12_01424.ogg" },
             };
+
             // 気さく
-            public string[][] sLoopVoice30FriendlyMune = new string[][] { 
-            new string[] { "V1_00585.ogg" , "V1_00589.ogg" }, //未使用音声(L7) + ca002a待機(L3)
-            new string[] { "V1_00592.ogg" , "V1_00593.ogg" }, //ca002a待機(L6,L7) 
-            new string[] { "V1_00698.ogg" , "V1_00699.ogg" }, //ca001j発情(L0,L1)
-            new string[] { "V1_00700.ogg" , "V1_00701.ogg" }, //ca001j発情(L2,L3)
+            public string[][] sLoopVoice30FriendlyMune = new string[][]
+            {
+                new string[] { "V1_00585.ogg", "V1_00589.ogg" }, //未使用音声(L7) + ca002a待機(L3)
+                new string[] { "V1_00592.ogg", "V1_00593.ogg" }, //ca002a待機(L6,L7)
+                new string[] { "V1_00698.ogg", "V1_00699.ogg" }, //ca001j発情(L0,L1)
+                new string[] { "V1_00700.ogg", "V1_00701.ogg" }, //ca001j発情(L2,L3)
             };
+
             // 淑女
-            public string[][] sLoopVoice30DameMune = new string[][] {
-            new string[] { "V0_00588.ogg" , "V0_00589.ogg" }, //ca002a待機(L2,L3)
-            new string[] { "V0_00590.ogg" , "V0_00591.ogg" }, //ca002a待機(L4,L5)
-            new string[] { "V0_00698.ogg" , "V0_00699.ogg" }, //ca001j発情(L2,L3)
-            new string[] { "V0_00700.ogg" , "V0_00701.ogg" }, //ca001j発情(L4,L5)
+            public string[][] sLoopVoice30DameMune = new string[][]
+            {
+                new string[] { "V0_00588.ogg", "V0_00589.ogg" }, //ca002a待機(L2,L3)
+                new string[] { "V0_00590.ogg", "V0_00591.ogg" }, //ca002a待機(L4,L5)
+                new string[] { "V0_00698.ogg", "V0_00699.ogg" }, //ca001j発情(L2,L3)
+                new string[] { "V0_00700.ogg", "V0_00701.ogg" }, //ca001j発情(L4,L5)
             };
+
             // ギャル  ※ca002a待機は股間で使用
-            public string[][] sLoopVoice30GalMune = new string[][] {
-            new string[] { "H13_01237.ogg" , "H13_01136.ogg" }, //ca001h初心(L1) + ft_00001処女喪失(L4)
-            new string[] { "H13_01238.ogg" , "H13_01137.ogg" }, //ca001h初心(L2) + ft_00001処女喪失(L5)
-            new string[] { "H13_01239.ogg" , "H13_01138.ogg" }, //ca001h初心(L3) + ft_00001処女喪失(L6)
-            new string[] { "H13_01240.ogg" , "H13_01139.ogg" }, //ca001h初心(L4) + ft_00001処女喪失(L7)
+            public string[][] sLoopVoice30GalMune = new string[][]
+            {
+                new string[] { "H13_01237.ogg", "H13_01136.ogg" }, //ca001h初心(L1) + ft_00001処女喪失(L4)
+                new string[] { "H13_01238.ogg", "H13_01137.ogg" }, //ca001h初心(L2) + ft_00001処女喪失(L5)
+                new string[] { "H13_01239.ogg", "H13_01138.ogg" }, //ca001h初心(L3) + ft_00001処女喪失(L6)
+                new string[] { "H13_01240.ogg", "H13_01139.ogg" }, //ca001h初心(L4) + ft_00001処女喪失(L7)
             };
-            
+
             // 股間のボイス設定
             // 未設定ならExciteMuneの音声が利用される
             // ca001h初心(L0～L5) ca001j発情(L0～L5) あたりの音声を設定
-            public string[][] sLoopVoice30PrideKokan = new string[][]{
-            new string[] { "S0_01308.ogg" , "S0_103950.ogg" },
-            new string[] { "S0_01309.ogg" , "S0_103951.ogg" },
-            new string[] { "S0_01310.ogg" , "S0_103952.ogg" },
-            new string[] { "S0_01311.ogg" , "S0_103953.ogg" },
-            };
-            public string[][] sLoopVoice30CoolKokan = new string[][]{
-            new string[] { "S1_02381.ogg" , "S1_102717.ogg" },
-            new string[] { "S1_02382.ogg" , "S1_102718.ogg" },
-            new string[] { "S1_02383.ogg" , "S1_102719.ogg" },
-            new string[] { "S1_02384.ogg" , "S1_102720.ogg" },
-            };
-            public string[][] sLoopVoice30PureKokan = new string[][]{
-            new string[] { "S2_01241.ogg" , "s2_01175.ogg" },
-            new string[] { "S2_01242.ogg" , "s2_01176.ogg" },
-            new string[] { "S2_01243.ogg" , "s2_01166.ogg" },
-            new string[] { "S2_01245.ogg" , "s2_01171.ogg" },
-            };
-            public string[][] sLoopVoice30YandereKokan = new string[][]{
-            new string[] { "S3_02847.ogg" , "S3_101125.ogg" },
-            new string[] { "S3_02848.ogg" , "S3_101126.ogg" },
-            new string[] { "S3_02849.ogg" , "S3_101127.ogg" },
-            new string[] { "S3_02848.ogg" , "S3_101128.ogg" },
-            };
-            public string[][] sLoopVoice30AnesanKokan = new string[][]{
-            new string[] { "S4_08199.ogg" , "S4_102930.ogg" },
-            new string[] { "S4_08200.ogg" , "S4_102931.ogg" },
-            new string[] { "S4_08201.ogg" , "S4_102932.ogg" },
-            new string[] { "S4_08202.ogg" , "S4_102933.ogg" },
-            };
-            public string[][] sLoopVoice30GenkiKokan = new string[][]{
-            new string[] { "S5_04119.ogg" , "S5_102337.ogg" },
-            new string[] { "S5_04120.ogg" , "S5_102338.ogg" },
-            new string[] { "S5_04121.ogg" , "S5_102339.ogg" },
-            new string[] { "S5_04122.ogg" , "S5_102340.ogg" },
-            };
-            public string[][] sLoopVoice30SadistKokan = new string[][]{
-            new string[] { "S6_02251.ogg" , "S6_02179.ogg" },
-            new string[] { "S6_02252.ogg" , "S6_02180.ogg" },
-            new string[] { "S6_02253.ogg" , "S6_02180.ogg" },
-            new string[] { "S6_02254.ogg" , "S6_02180.ogg" },
+            public string[][] sLoopVoice30PrideKokan = new string[][]
+            {
+                new string[] { "S0_01308.ogg", "S0_103950.ogg" },
+                new string[] { "S0_01309.ogg", "S0_103951.ogg" },
+                new string[] { "S0_01310.ogg", "S0_103952.ogg" },
+                new string[] { "S0_01311.ogg", "S0_103953.ogg" },
             };
 
-            public string[][] sLoopVoice30MukuKokan = new string[][]{
-            new string[] { "H0_00213.ogg" , "H0_09226.ogg" },
-            new string[] { "H0_00214.ogg" , "H0_09227.ogg" },
-            new string[] { "H0_00215.ogg" , "H0_09228.ogg" },
-            new string[] { "H0_00216.ogg" , "H0_09229.ogg" },
+            public string[][] sLoopVoice30CoolKokan = new string[][]
+            {
+                new string[] { "S1_02381.ogg", "S1_102717.ogg" },
+                new string[] { "S1_02382.ogg", "S1_102718.ogg" },
+                new string[] { "S1_02383.ogg", "S1_102719.ogg" },
+                new string[] { "S1_02384.ogg", "S1_102720.ogg" },
             };
-            public string[][] sLoopVoice30MajimeKokan = new string[][]{
-            new string[] { "H1_00225.ogg" , "H1_08968.ogg" },
-            new string[] { "H1_00226.ogg" , "H1_08969.ogg" },
-            new string[] { "H1_00227.ogg" , "H1_08970.ogg" },
-            new string[] { "H1_00228.ogg" , "H1_08971.ogg" },
+
+            public string[][] sLoopVoice30PureKokan = new string[][]
+            {
+                new string[] { "S2_01241.ogg", "s2_01175.ogg" },
+                new string[] { "S2_01242.ogg", "s2_01176.ogg" },
+                new string[] { "S2_01243.ogg", "s2_01166.ogg" },
+                new string[] { "S2_01245.ogg", "s2_01171.ogg" },
             };
-            public string[][] sLoopVoice30RindereKokan = new string[][]{
-            new string[] { "H2_00099.ogg" , "H2_09843.ogg" },
-            new string[] { "H2_00100.ogg" , "H2_09844.ogg" },
-            new string[] { "H2_00101.ogg" , "H2_09845.ogg" },
-            new string[] { "H2_00102.ogg" , "H2_09846.ogg" },
+
+            public string[][] sLoopVoice30YandereKokan = new string[][]
+            {
+                new string[] { "S3_02847.ogg", "S3_101125.ogg" },
+                new string[] { "S3_02848.ogg", "S3_101126.ogg" },
+                new string[] { "S3_02849.ogg", "S3_101127.ogg" },
+                new string[] { "S3_02848.ogg", "S3_101128.ogg" },
             };
-            public string[][] sLoopVoice30SilentKokan = new string[][]{
-            new string[] { "H3_00606.ogg" , "H3_00734.ogg" },
-            new string[] { "H3_00607.ogg" , "H3_00735.ogg" },
-            new string[] { "H3_00608.ogg" , "H3_00736.ogg" },
-            new string[] { "H3_00609.ogg" , "H3_00737.ogg" },
+
+            public string[][] sLoopVoice30AnesanKokan = new string[][]
+            {
+                new string[] { "S4_08199.ogg", "S4_102930.ogg" },
+                new string[] { "S4_08200.ogg", "S4_102931.ogg" },
+                new string[] { "S4_08201.ogg", "S4_102932.ogg" },
+                new string[] { "S4_08202.ogg", "S4_102933.ogg" },
             };
-            public string[][] sLoopVoice30DevilishKokan = new string[][]{
-            new string[] { "H4_00941.ogg" , "H4_01069.ogg" },
-            new string[] { "H4_00942.ogg" , "H4_01070.ogg" },
-            new string[] { "H4_00943.ogg" , "H4_01071.ogg" },
-            new string[] { "H4_00944.ogg" , "H4_01072.ogg" },
+
+            public string[][] sLoopVoice30GenkiKokan = new string[][]
+            {
+                new string[] { "S5_04119.ogg", "S5_102337.ogg" },
+                new string[] { "S5_04120.ogg", "S5_102338.ogg" },
+                new string[] { "S5_04121.ogg", "S5_102339.ogg" },
+                new string[] { "S5_04122.ogg", "S5_102340.ogg" },
             };
-            public string[][] sLoopVoice30LadylikeKokan = new string[][]{
-            new string[] { "H5_00792.ogg" , "H5_00700.ogg" }, //ca001h初心(L0-L3) + 愛撫ft_00003(L4-L7)
-            new string[] { "H5_00793.ogg" , "H5_00701.ogg" },
-            new string[] { "H5_00794.ogg" , "H5_00702.ogg" },
-            new string[] { "H5_00795.ogg" , "H5_00703.ogg" },
+
+            public string[][] sLoopVoice30SadistKokan = new string[][]
+            {
+                new string[] { "S6_02251.ogg", "S6_02179.ogg" },
+                new string[] { "S6_02252.ogg", "S6_02180.ogg" },
+                new string[] { "S6_02253.ogg", "S6_02180.ogg" },
+                new string[] { "S6_02254.ogg", "S6_02180.ogg" },
             };
-            public string[][] sLoopVoice30SecretaryKokan = new string[][]{
-            new string[] { "H6_00246.ogg" , "H6_00374.ogg" },
-            new string[] { "H6_00247.ogg" , "H6_00375.ogg" },
-            new string[] { "H6_00248.ogg" , "H6_00376.ogg" },
-            new string[] { "H6_00249.ogg" , "H6_00377.ogg" },
+
+            public string[][] sLoopVoice30MukuKokan = new string[][]
+            {
+                new string[] { "H0_00213.ogg", "H0_09226.ogg" },
+                new string[] { "H0_00214.ogg", "H0_09227.ogg" },
+                new string[] { "H0_00215.ogg", "H0_09228.ogg" },
+                new string[] { "H0_00216.ogg", "H0_09229.ogg" },
             };
-            public string[][] sLoopVoice30SisterKokan = new string[][]{
-            new string[] { "H7_02850.ogg" , "H7_02997.ogg" },
-            new string[] { "H7_02851.ogg" , "H7_02998.ogg" },
-            new string[] { "H7_02852.ogg" , "H7_02999.ogg" },
-            new string[] { "H7_02853.ogg" , "H7_03000.ogg" },
+
+            public string[][] sLoopVoice30MajimeKokan = new string[][]
+            {
+                new string[] { "H1_00225.ogg", "H1_08968.ogg" },
+                new string[] { "H1_00226.ogg", "H1_08969.ogg" },
+                new string[] { "H1_00227.ogg", "H1_08970.ogg" },
+                new string[] { "H1_00228.ogg", "H1_08971.ogg" },
             };
-            public string[][] sLoopVoice30CurtnessKokan = new string[][]{
-            new string[] { "H8_01219.ogg" , "H8_01347.ogg" },
-            new string[] { "H8_01220.ogg" , "H8_01348.ogg" },
-            new string[] { "H8_01221.ogg" , "H8_01349.ogg" },
-            new string[] { "H8_01222.ogg" , "H8_01350.ogg" },
+
+            public string[][] sLoopVoice30RindereKokan = new string[][]
+            {
+                new string[] { "H2_00099.ogg", "H2_09843.ogg" },
+                new string[] { "H2_00100.ogg", "H2_09844.ogg" },
+                new string[] { "H2_00101.ogg", "H2_09845.ogg" },
+                new string[] { "H2_00102.ogg", "H2_09846.ogg" },
             };
-            public string[][] sLoopVoice30MissyKokan = new string[][]{
-            new string[] { "H9_00770.ogg" , "H9_00787.ogg" },
-            new string[] { "H9_00771.ogg" , "H9_00788.ogg" },
-            new string[] { "H9_00772.ogg" , "H9_00789.ogg" },
-            new string[] { "H9_00773.ogg" , "H9_00790.ogg" },
+
+            public string[][] sLoopVoice30SilentKokan = new string[][]
+            {
+                new string[] { "H3_00606.ogg", "H3_00734.ogg" },
+                new string[] { "H3_00607.ogg", "H3_00735.ogg" },
+                new string[] { "H3_00608.ogg", "H3_00736.ogg" },
+                new string[] { "H3_00609.ogg", "H3_00737.ogg" },
             };
-            public string[][] sLoopVoice30ChildhoodKokan = new string[][]{
-            new string[] { "H10_04041.ogg" , "H10_04057.ogg" },
-            new string[] { "H10_04042.ogg" , "H10_04058.ogg" },
-            new string[] { "H10_04043.ogg" , "H10_04059.ogg" },
-            new string[] { "H10_04044.ogg" , "H10_04060.ogg" },
+
+            public string[][] sLoopVoice30DevilishKokan = new string[][]
+            {
+                new string[] { "H4_00941.ogg", "H4_01069.ogg" },
+                new string[] { "H4_00942.ogg", "H4_01070.ogg" },
+                new string[] { "H4_00943.ogg", "H4_01071.ogg" },
+                new string[] { "H4_00944.ogg", "H4_01072.ogg" },
             };
-            public string[][] sLoopVoice30MasochistKokan = new string[][]{
-            new string[] { "H11_00849.ogg" , "H11_00865.ogg" },
-            new string[] { "H11_00850.ogg" , "H11_00866.ogg" },
-            new string[] { "H11_00851.ogg" , "H11_00867.ogg" },
-            new string[] { "H11_00852.ogg" , "H11_00868.ogg" },
+
+            public string[][] sLoopVoice30LadylikeKokan = new string[][]
+            {
+                new string[] { "H5_00792.ogg", "H5_00700.ogg" }, //ca001h初心(L0-L3) + 愛撫ft_00003(L4-L7)
+                new string[] { "H5_00793.ogg", "H5_00701.ogg" },
+                new string[] { "H5_00794.ogg", "H5_00702.ogg" },
+                new string[] { "H5_00795.ogg", "H5_00703.ogg" },
             };
-            public string[][] sLoopVoice30CraftyKokan = new string[][]{
-            new string[] { "H12_01293.ogg" , "H12_01421.ogg" },
-            new string[] { "H12_01294.ogg" , "H12_01422.ogg" },
-            new string[] { "H12_01295.ogg" , "H12_01423.ogg" },
-            new string[] { "H12_01296.ogg" , "H12_01424.ogg" },
+
+            public string[][] sLoopVoice30SecretaryKokan = new string[][]
+            {
+                new string[] { "H6_00246.ogg", "H6_00374.ogg" },
+                new string[] { "H6_00247.ogg", "H6_00375.ogg" },
+                new string[] { "H6_00248.ogg", "H6_00376.ogg" },
+                new string[] { "H6_00249.ogg", "H6_00377.ogg" },
             };
-            public string[][] sLoopVoice30FriendlyKokan = new string[][]{
-            new string[] { "V1_00570.ogg" , "V1_00698.ogg" },
-            new string[] { "V1_00571.ogg" , "V1_00699.ogg" },
-            new string[] { "V1_00572.ogg" , "V1_00670.ogg" },
-            new string[] { "V1_00573.ogg" , "V1_00671.ogg" },
+
+            public string[][] sLoopVoice30SisterKokan = new string[][]
+            {
+                new string[] { "H7_02850.ogg", "H7_02997.ogg" },
+                new string[] { "H7_02851.ogg", "H7_02998.ogg" },
+                new string[] { "H7_02852.ogg", "H7_02999.ogg" },
+                new string[] { "H7_02853.ogg", "H7_03000.ogg" },
             };
-            public string[][] sLoopVoice30DameKokan = new string[][]{
-            new string[] { "V0_00568.ogg" , "V0_00696.ogg" },
-            new string[] { "V0_00569.ogg" , "V0_00697.ogg" },
-            new string[] { "V0_00570.ogg" , "V0_00698.ogg" },
-            new string[] { "V0_00571.ogg" , "V0_00699.ogg" },
+
+            public string[][] sLoopVoice30CurtnessKokan = new string[][]
+            {
+                new string[] { "H8_01219.ogg", "H8_01347.ogg" },
+                new string[] { "H8_01220.ogg", "H8_01348.ogg" },
+                new string[] { "H8_01221.ogg", "H8_01349.ogg" },
+                new string[] { "H8_01222.ogg", "H8_01350.ogg" },
             };
-            public string[][] sLoopVoice30GalKokan = new string[][]{
-            new string[] { "H13_01143.ogg" , "H13_01253.ogg" }, //ca002a待機(L3-L5,L7) + ca001j発情(L1,L3-L5)
-            new string[] { "H13_01144.ogg" , "H13_01255.ogg" },
-            new string[] { "H13_01145.ogg" , "H13_01256.ogg" },
-            new string[] { "H13_01147.ogg" , "H13_01257.ogg" },
+
+            public string[][] sLoopVoice30MissyKokan = new string[][]
+            {
+                new string[] { "H9_00770.ogg", "H9_00787.ogg" },
+                new string[] { "H9_00771.ogg", "H9_00788.ogg" },
+                new string[] { "H9_00772.ogg", "H9_00789.ogg" },
+                new string[] { "H9_00773.ogg", "H9_00790.ogg" },
+            };
+
+            public string[][] sLoopVoice30ChildhoodKokan = new string[][]
+            {
+                new string[] { "H10_04041.ogg", "H10_04057.ogg" },
+                new string[] { "H10_04042.ogg", "H10_04058.ogg" },
+                new string[] { "H10_04043.ogg", "H10_04059.ogg" },
+                new string[] { "H10_04044.ogg", "H10_04060.ogg" },
+            };
+
+            public string[][] sLoopVoice30MasochistKokan = new string[][]
+            {
+                new string[] { "H11_00849.ogg", "H11_00865.ogg" },
+                new string[] { "H11_00850.ogg", "H11_00866.ogg" },
+                new string[] { "H11_00851.ogg", "H11_00867.ogg" },
+                new string[] { "H11_00852.ogg", "H11_00868.ogg" },
+            };
+
+            public string[][] sLoopVoice30CraftyKokan = new string[][]
+            {
+                new string[] { "H12_01293.ogg", "H12_01421.ogg" },
+                new string[] { "H12_01294.ogg", "H12_01422.ogg" },
+                new string[] { "H12_01295.ogg", "H12_01423.ogg" },
+                new string[] { "H12_01296.ogg", "H12_01424.ogg" },
+            };
+
+            public string[][] sLoopVoice30FriendlyKokan = new string[][]
+            {
+                new string[] { "V1_00570.ogg", "V1_00698.ogg" },
+                new string[] { "V1_00571.ogg", "V1_00699.ogg" },
+                new string[] { "V1_00572.ogg", "V1_00670.ogg" },
+                new string[] { "V1_00573.ogg", "V1_00671.ogg" },
+            };
+
+            public string[][] sLoopVoice30DameKokan = new string[][]
+            {
+                new string[] { "V0_00568.ogg", "V0_00696.ogg" },
+                new string[] { "V0_00569.ogg", "V0_00697.ogg" },
+                new string[] { "V0_00570.ogg", "V0_00698.ogg" },
+                new string[] { "V0_00571.ogg", "V0_00699.ogg" },
+            };
+
+            public string[][] sLoopVoice30GalKokan = new string[][]
+            {
+                new string[] { "H13_01143.ogg", "H13_01253.ogg" }, //ca002a待機(L3-L5,L7) + ca001j発情(L1,L3-L5)
+                new string[] { "H13_01144.ogg", "H13_01255.ogg" },
+                new string[] { "H13_01145.ogg", "H13_01256.ogg" },
+                new string[] { "H13_01147.ogg", "H13_01257.ogg" },
             };
 
             //カスタムボイス設定 string[][][] だと読み込んでくれないためLvごとの配列に分けて設定
-            public string[] sLoopVoice30CustomMaidName = new string[]{};
+            public string[] sLoopVoice30CustomMaidName = new string[] { };
 
-            public string[][] sLoopVoice30CustomExciteLv0 = new string[][]{};
-            public string[][] sLoopVoice30CustomExciteLv1 = new string[][]{};
-            public string[][] sLoopVoice30CustomExciteLv2 = new string[][]{};
-            public string[][] sLoopVoice30CustomExciteLv3 = new string[][]{};
+            public string[][] sLoopVoice30CustomExciteLv0 = new string[][] { };
+            public string[][] sLoopVoice30CustomExciteLv1 = new string[][] { };
+            public string[][] sLoopVoice30CustomExciteLv2 = new string[][] { };
+            public string[][] sLoopVoice30CustomExciteLv3 = new string[][] { };
 
-            public string[][] sLoopVoice30CustomMuneLv0 = new string[][]{};
-            public string[][] sLoopVoice30CustomMuneLv1 = new string[][]{};
-            public string[][] sLoopVoice30CustomMuneLv2 = new string[][]{};
-            public string[][] sLoopVoice30CustomMuneLv3 = new string[][]{};
-            
-            public string[][] sLoopVoice30CustomKokanLv0 = new string[][]{};
-            public string[][] sLoopVoice30CustomKokanLv1 = new string[][]{};
-            public string[][] sLoopVoice30CustomKokanLv2 = new string[][]{};
-            public string[][] sLoopVoice30CustomKokanLv3 = new string[][]{};
+            public string[][] sLoopVoice30CustomMuneLv0 = new string[][] { };
+            public string[][] sLoopVoice30CustomMuneLv1 = new string[][] { };
+            public string[][] sLoopVoice30CustomMuneLv2 = new string[][] { };
+            public string[][] sLoopVoice30CustomMuneLv3 = new string[][] { };
+
+            public string[][] sLoopVoice30CustomKokanLv0 = new string[][] { };
+            public string[][] sLoopVoice30CustomKokanLv1 = new string[][] { };
+            public string[][] sLoopVoice30CustomKokanLv2 = new string[][] { };
+            public string[][] sLoopVoice30CustomKokanLv3 = new string[][] { };
         }
 
 
@@ -639,21 +787,34 @@ namespace COM3D2.KissYourMaid.Plugin
         //カスタムボイス 内部格納用
         public string[][][] sLoopVoice30CustomExcite = null;
         public string[][][] sLoopVoice30CustomMune = null;
+
         public string[][][] sLoopVoice30CustomKokan = null;
+
         //設定ファイルから通常の配列形式に変換して格納
         private void setCustomVoice()
         {
             sLoopVoice30CustomExcite = new string[cfg.sLoopVoice30CustomExciteLv0.Length][][];
-            for (int i = 0; i < cfg.sLoopVoice30CustomExciteLv0.Length; i++) {
+            for (int i = 0; i < cfg.sLoopVoice30CustomExciteLv0.Length; i++)
+            {
                 string[][] voice = new string[4][];
-                voice[0] = cfg.sLoopVoice30CustomExciteLv0.Length > i ? cfg.sLoopVoice30CustomExciteLv0[i] : new string[0];
-                voice[1] = cfg.sLoopVoice30CustomExciteLv1.Length > i ? cfg.sLoopVoice30CustomExciteLv1[i] : new string[0];
-                voice[2] = cfg.sLoopVoice30CustomExciteLv2.Length > i ? cfg.sLoopVoice30CustomExciteLv2[i] : new string[0];
-                voice[3] = cfg.sLoopVoice30CustomExciteLv3.Length > i ? cfg.sLoopVoice30CustomExciteLv3[i] : new string[0];
+                voice[0] = cfg.sLoopVoice30CustomExciteLv0.Length > i
+                    ? cfg.sLoopVoice30CustomExciteLv0[i]
+                    : new string[0];
+                voice[1] = cfg.sLoopVoice30CustomExciteLv1.Length > i
+                    ? cfg.sLoopVoice30CustomExciteLv1[i]
+                    : new string[0];
+                voice[2] = cfg.sLoopVoice30CustomExciteLv2.Length > i
+                    ? cfg.sLoopVoice30CustomExciteLv2[i]
+                    : new string[0];
+                voice[3] = cfg.sLoopVoice30CustomExciteLv3.Length > i
+                    ? cfg.sLoopVoice30CustomExciteLv3[i]
+                    : new string[0];
                 sLoopVoice30CustomExcite[i] = voice;
             }
+
             sLoopVoice30CustomMune = new string[cfg.sLoopVoice30CustomMuneLv0.Length][][];
-            for (int i = 0; i < cfg.sLoopVoice30CustomMuneLv0.Length; i++) {
+            for (int i = 0; i < cfg.sLoopVoice30CustomMuneLv0.Length; i++)
+            {
                 string[][] voice = new string[4][];
                 voice[0] = cfg.sLoopVoice30CustomMuneLv0.Length > i ? cfg.sLoopVoice30CustomMuneLv0[i] : new string[0];
                 voice[1] = cfg.sLoopVoice30CustomMuneLv1.Length > i ? cfg.sLoopVoice30CustomMuneLv1[i] : new string[0];
@@ -661,34 +822,57 @@ namespace COM3D2.KissYourMaid.Plugin
                 voice[3] = cfg.sLoopVoice30CustomMuneLv3.Length > i ? cfg.sLoopVoice30CustomMuneLv3[i] : new string[0];
                 sLoopVoice30CustomMune[i] = voice;
             }
+
             sLoopVoice30CustomKokan = new string[cfg.sLoopVoice30CustomKokanLv0.Length][][];
-            for (int i = 0; i < cfg.sLoopVoice30CustomKokanLv0.Length; i++) {
+            for (int i = 0; i < cfg.sLoopVoice30CustomKokanLv0.Length; i++)
+            {
                 string[][] voice = new string[4][];
-                voice[0] = cfg.sLoopVoice30CustomKokanLv0.Length > i ? cfg.sLoopVoice30CustomKokanLv0[i] : new string[0];
-                voice[1] = cfg.sLoopVoice30CustomKokanLv1.Length > i ? cfg.sLoopVoice30CustomKokanLv1[i] : new string[0];
-                voice[2] = cfg.sLoopVoice30CustomKokanLv2.Length > i ? cfg.sLoopVoice30CustomKokanLv2[i] : new string[0];
-                voice[3] = cfg.sLoopVoice30CustomKokanLv3.Length > i ? cfg.sLoopVoice30CustomKokanLv3[i] : new string[0];
+                voice[0] = cfg.sLoopVoice30CustomKokanLv0.Length > i
+                    ? cfg.sLoopVoice30CustomKokanLv0[i]
+                    : new string[0];
+                voice[1] = cfg.sLoopVoice30CustomKokanLv1.Length > i
+                    ? cfg.sLoopVoice30CustomKokanLv1[i]
+                    : new string[0];
+                voice[2] = cfg.sLoopVoice30CustomKokanLv2.Length > i
+                    ? cfg.sLoopVoice30CustomKokanLv2[i]
+                    : new string[0];
+                voice[3] = cfg.sLoopVoice30CustomKokanLv3.Length > i
+                    ? cfg.sLoopVoice30CustomKokanLv3[i]
+                    : new string[0];
                 sLoopVoice30CustomKokan[i] = voice;
             }
 
             //コンソールに表示
-            if (cfg.sLoopVoice30CustomMaidName.Length > 0) {
+            if (cfg.sLoopVoice30CustomMaidName.Length > 0)
+            {
                 Console.WriteLine("[KissYourMaid] カスタムボイス設定");
-                for (int i = 0; i < cfg.sLoopVoice30CustomMaidName.Length; i++) {
-                    Console.WriteLine("CustomMaidName["+i+"] \""+cfg.sLoopVoice30CustomMaidName[i]+"\"");
-                    if (i < sLoopVoice30CustomExcite.Length) {
-                        for (int j=0; j<sLoopVoice30CustomExcite[i].Length; j++) {
-                            Console.WriteLine(" CustomExcite["+i+"]["+j+"] "+string.Join(",", sLoopVoice30CustomExcite[i][j]));
+                for (int i = 0; i < cfg.sLoopVoice30CustomMaidName.Length; i++)
+                {
+                    Console.WriteLine("CustomMaidName[" + i + "] \"" + cfg.sLoopVoice30CustomMaidName[i] + "\"");
+                    if (i < sLoopVoice30CustomExcite.Length)
+                    {
+                        for (int j = 0; j < sLoopVoice30CustomExcite[i].Length; j++)
+                        {
+                            Console.WriteLine(" CustomExcite[" + i + "][" + j + "] " +
+                                              string.Join(",", sLoopVoice30CustomExcite[i][j]));
                         }
                     }
-                    if (i < sLoopVoice30CustomMune.Length) {
-                        for (int j=0; j<sLoopVoice30CustomMune[i].Length; j++) {
-                            Console.WriteLine(" CustomMune  ["+i+"]["+j+"] "+string.Join(",", sLoopVoice30CustomMune[i][j]));
+
+                    if (i < sLoopVoice30CustomMune.Length)
+                    {
+                        for (int j = 0; j < sLoopVoice30CustomMune[i].Length; j++)
+                        {
+                            Console.WriteLine(" CustomMune  [" + i + "][" + j + "] " +
+                                              string.Join(",", sLoopVoice30CustomMune[i][j]));
                         }
                     }
-                    if (i < sLoopVoice30CustomKokan.Length) {
-                        for (int j=0; j<sLoopVoice30CustomKokan[i].Length; j++) {
-                            Console.WriteLine(" CustomKokan ["+i+"]["+j+"] "+string.Join(",", sLoopVoice30CustomKokan[i][j]));
+
+                    if (i < sLoopVoice30CustomKokan.Length)
+                    {
+                        for (int j = 0; j < sLoopVoice30CustomKokan[i].Length; j++)
+                        {
+                            Console.WriteLine(" CustomKokan [" + i + "][" + j + "] " +
+                                              string.Join(",", sLoopVoice30CustomKokan[i][j]));
                         }
                     }
                 }
@@ -699,35 +883,45 @@ namespace COM3D2.KissYourMaid.Plugin
         public string[][] getLoopVoice(string uniqueName, string target, int customId)
         {
             //Console.WriteLine("[KissYourMaid] getLoopVoice uniqueName="+uniqueName+" target="+target+" customId="+customId);
-            if (customId != -1) {
+            if (customId != -1)
+            {
                 //カスタムボイスの場合
-                if (target == "Excite") {
+                if (target == "Excite")
+                {
                     if (sLoopVoice30CustomExcite.Length > customId) return sLoopVoice30CustomExcite[customId];
-                } else if (target == "Mune") {
+                }
+                else if (target == "Mune")
+                {
                     if (sLoopVoice30CustomMune.Length > customId) return sLoopVoice30CustomMune[customId];
-                } else if (target == "Kokan") {
+                }
+                else if (target == "Kokan")
+                {
                     if (sLoopVoice30CustomKokan.Length > customId) return sLoopVoice30CustomKokan[customId];
                 }
-            } else {
+            }
+            else
+            {
                 //性格別ボイス
-                FieldInfo voiceFieldInfo = typeof(KissYourMaidConfig).GetField("sLoopVoice30"+uniqueName+target, BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetField);
+                FieldInfo voiceFieldInfo = typeof(KissYourMaidConfig).GetField("sLoopVoice30" + uniqueName + target,
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetField);
                 if (voiceFieldInfo != null) return (string[][])voiceFieldInfo.GetValue(cfg);
             }
+
             return null;
         }
 
         //　状態管理
-        private int iState = 0;                             //　ステート番号
-        private int iStateMajor = 10;                       //　距離によるステート
-        private int iStateMajorOld = 10;                    //　距離によるステート（前回値）
-        private int iStateMinor = 0;                        //　時間経過によるステート
+        private int iState = 0; //　ステート番号
+        private int iStateMajor = 10; //　距離によるステート
+        private int iStateMajorOld = 10; //　距離によるステート（前回値）
+        private int iStateMinor = 0; //　時間経過によるステート
 
-                                                            //　10 …　離れている
-                                                            //　20 …　近い（キス前・遷移直後）
-                                                            //　21 …　近い（キス前・一定時間経過後）
-                                                            //　30 …　とても近い（キス）
-                                                            //　40 …　近い（キス後・遷移直後）
-                                                            //　41 …　近い（キス後・一定時間経過後）
+        //　10 …　離れている
+        //　20 …　近い（キス前・遷移直後）
+        //　21 …　近い（キス前・一定時間経過後）
+        //　30 …　とても近い（キス）
+        //　40 …　近い（キス後・遷移直後）
+        //　41 …　近い（キス後・一定時間経過後）
 
         //　距離判定
         //private float fDistanceToMaidFace;
@@ -742,19 +936,19 @@ namespace COM3D2.KissYourMaid.Plugin
         private string sFaceBlendBackup = "";
 
         //　声管理
-        private bool bIsVoiceOverriding = false;            //　音声オーバライド（上書き）を適用中
-        private string sLoopVoiceOverriding = "";           //　音声オーバライド（上書き）を適用している音声ファイル名
-        private float fLoopVoiceEndTime = 0f;               //  再生中のループ音声の終了時間
-        private bool bOverrideInterrupted = false;          //　音声オーバライド（上書き）を適用したが、スキル変更などにより割りこまれた
-        private string sLoopVoiceBackup = "";               //　音声オーバライド（上書き）を終了した時に、復元再生する音声ファイル名
+        private bool bIsVoiceOverriding = false; //　音声オーバライド（上書き）を適用中
+        private string sLoopVoiceOverriding = ""; //　音声オーバライド（上書き）を適用している音声ファイル名
+        private float fLoopVoiceEndTime = 0f; //  再生中のループ音声の終了時間
+        private bool bOverrideInterrupted = false; //　音声オーバライド（上書き）を適用したが、スキル変更などにより割りこまれた
+        private string sLoopVoiceBackup = ""; //　音声オーバライド（上書き）を終了した時に、復元再生する音声ファイル名
 
         //　興奮度管理
-        private int iExciteLevel = 1;                       //　０～３００の興奮度を、興奮レベルに変換した値（１～４）
-        private int iExciteLevelMod = 0;                    //　興奮レベルに対する手動変更値（－３～＋３）
+        private int iExciteLevel = 1; //　０～３００の興奮度を、興奮レベルに変換した値（１～４）
+        private int iExciteLevelMod = 0; //　興奮レベルに対する手動変更値（－３～＋３）
 
-        private Maid playingMaid = null;       //ボイスを再生しているメイド
+        private Maid playingMaid = null; //ボイスを再生しているメイド
         private string playingTargetPart = ""; //ボイスを再生している部位
-        private int playingExciteLevel = -1;   //ボイスを再生している興奮レベル
+        private int playingExciteLevel = -1; //ボイスを再生している興奮レベル
 
         //　Chu-B Lip / VR
         private bool bChuBLip;
@@ -796,6 +990,7 @@ namespace COM3D2.KissYourMaid.Plugin
 
         //複数人対応
         private int iTargetMaid = -1;
+
         //private int iStockMaidCount = 999;
         private bool bTargetMaidChanged = false;
 
@@ -815,10 +1010,13 @@ namespace COM3D2.KissYourMaid.Plugin
 
             // Iniファイル読み込み
             string configPath = getConfigPath();
-            if (System.IO.File.Exists(configPath)) {
+            if (System.IO.File.Exists(configPath))
+            {
                 cfg = SharedConfig.ReadConfig<KissYourMaidConfig>("Config", configPath);
                 Console.WriteLine("[KissYourMaid] Config Loaded");
-            } else {
+            }
+            else
+            {
                 // Iniファイル書き出し ファイルがなければ
                 SharedConfig.SaveConfig("Config", configPath, cfg);
                 Console.WriteLine("[KissYourMaid] Config Saved");
@@ -828,13 +1026,17 @@ namespace COM3D2.KissYourMaid.Plugin
             // ChuBLip判別
             bChuBLip = path.Contains("COM3D2OHx64") || path.Contains("COM3D2OHx86") || path.Contains("COM3D2OHVRx64");
             // VR判別
-            bOculusVR = path.Contains("COM3D2OHVRx64") || path.Contains("COM3D2VRx64") || Environment.CommandLine.ToLower().Contains("/vr");
-            if (bOculusVR) {
+            bOculusVR = path.Contains("COM3D2OHVRx64") || path.Contains("COM3D2VRx64") ||
+                        Environment.CommandLine.ToLower().Contains("/vr");
+            if (bOculusVR)
+            {
                 cfg.fDistanceThresholdBase1 = cfg.fDistanceThresholdBase1VR;
                 cfg.fDistanceThresholdBase2 = cfg.fDistanceThresholdBase2VR;
                 cfg.fDistanceThresholdOffset = cfg.fDistanceThresholdOffsetVR;
                 iFpsMax = cfg.iFpsMaxVR;
-            } else {
+            }
+            else
+            {
                 iFpsMax = cfg.iFpsMax;
             }
 
@@ -844,11 +1046,11 @@ namespace COM3D2.KissYourMaid.Plugin
             //カスタムボイス変換 設定によってはエラーが出る可能性があるので最後に実行
             setCustomVoice();
 
-            Console.WriteLine("[KissYourMaid] Awake bChuBLip="+bChuBLip+" bOculusVR="+bOculusVR);
+            Console.WriteLine("[KissYourMaid] Awake bChuBLip=" + bChuBLip + " bOculusVR=" + bOculusVR);
         }
 
-        public void Start() {
-
+        public void Start()
+        {
         }
 
         public void OnDestroy()
@@ -860,7 +1062,8 @@ namespace COM3D2.KissYourMaid.Plugin
         private string getConfigPath()
         {
             return System.IO.Path.Combine(
-                System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Config"),
+                System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    "Config"),
                 GetType().Name + ".ini"
             );
         }
@@ -870,49 +1073,59 @@ namespace COM3D2.KissYourMaid.Plugin
         {
             //　レベルの取得
             iSceneLevel = level;
-            Console.WriteLine("[KissYourMaid] OnActiveSceneChanged "+iSceneLevel);
+            Console.WriteLine("[KissYourMaid] OnActiveSceneChanged " + iSceneLevel);
 
             //　メインカメラの取得
             mainCamera = GameMain.Instance.MainCamera;
-            
+
             //　メイドさんの取得
             maid = GameMain.Instance.CharacterMgr.GetMaid(0);
 
             // 夜伽シーンに有るかチェック
             checkYotogiScene();
-            
+
             // エディットシーンに有るかチェック
             checkEditScene();
 
             //ダンス以外の他のシーンでも有効にする
-            if (!bIsEditScene && !bIsYotogiScene) {
+            if (!bIsEditScene && !bIsYotogiScene)
+            {
                 //シーン15を有効にする
                 if (cfg.bPluginValidADV && iSceneLevel == 15) bIsYotogiScene = true;
 
                 //ホーム + イベント
-                if (cfg.bPluginValidEvent) {
+                if (cfg.bPluginValidEvent)
+                {
                     //回想 （Hイベント）
-                    if (iSceneLevel == 24 ) bIsYotogiScene = true;
+                    if (iSceneLevel == 24) bIsYotogiScene = true;
                 }
+
                 //シーン15設定と異なる場合は有効状態変更
-                if (cfg.bPluginValidADV != cfg.bPluginValidEvent) {
-                    //Hイベント&夜伽前会話:1→15 / ライフモード:81→15 / 訓練イベント:15→15 / イベント選択からの再生:42→15 
-                    if (iSceneLevel == 15 && (iPrevSceneLevel == 1 || iPrevSceneLevel == 81 || iPrevSceneLevel == 15 || iPrevSceneLevel == 42)) bIsYotogiScene = cfg.bPluginValidEvent;
+                if (cfg.bPluginValidADV != cfg.bPluginValidEvent)
+                {
+                    //Hイベント&夜伽前会話:1→15 / ライフモード:81→15 / 訓練イベント:15→15 / イベント選択からの再生:42→15
+                    if (iSceneLevel == 15 && (iPrevSceneLevel == 1 || iPrevSceneLevel == 81 || iPrevSceneLevel == 15 ||
+                                              iPrevSceneLevel == 42)) bIsYotogiScene = cfg.bPluginValidEvent;
                 }
 
                 //プライベート + 嫁イド
-                if (cfg.bPluginValidPrivate) {
+                if (cfg.bPluginValidPrivate)
+                {
                     //ホーム:3 / 夜伽前会話:14 / プライベートモード:95
                     if (iSceneLevel == 3 || iSceneLevel == 14 || iSceneLevel == 95) bIsYotogiScene = true;
                 }
+
                 //シーン15設定と異なる場合は有効状態変更
-                if (cfg.bPluginValidADV != cfg.bPluginValidPrivate) {
+                if (cfg.bPluginValidADV != cfg.bPluginValidPrivate)
+                {
                     //プライベートモード:95→15 / 嫁イド挨拶(夜):3→15 / 夜伽後会話:14→15 /  嫁イド挨拶(朝):16→15
-                    if (iSceneLevel == 15 && (iPrevSceneLevel == 95  || iPrevSceneLevel == 3 || iPrevSceneLevel == 14 || iPrevSceneLevel == 16)) bIsYotogiScene = cfg.bPluginValidPrivate;
+                    if (iSceneLevel == 15 && (iPrevSceneLevel == 95 || iPrevSceneLevel == 3 || iPrevSceneLevel == 14 ||
+                                              iPrevSceneLevel == 16)) bIsYotogiScene = cfg.bPluginValidPrivate;
                 }
 
                 //ゲストモード
-                if (cfg.bPluginValidGuest) {
+                if (cfg.bPluginValidGuest)
+                {
                     //ゲストモード:53
                     if (iSceneLevel == 53) bIsYotogiScene = true;
                 }
@@ -933,15 +1146,18 @@ namespace COM3D2.KissYourMaid.Plugin
                     UIAtlas uiAtlasPreset = uiAtlas.FirstOrDefault(a => a.name == "AtlasPreset");
 
                     // GearMenuを利用してシステムメニューにボタン追加
-                    if ((bIsYotogiScene && cfg.bPluginEnabled) || (bIsEditScene && cfg.bPluginEnabledInEdit && cfg.bPluginEnabled))
+                    if ((bIsYotogiScene && cfg.bPluginEnabled) ||
+                        (bIsEditScene && cfg.bPluginEnabledInEdit && cfg.bPluginEnabled))
                     {
-                        gearMenuButton = GearMenu.Buttons.Add("KissYourMaid", "KissYourMaid", KissEnableIcon.Png, (go) => togglePluginEnabled());
+                        gearMenuButton = GearMenu.Buttons.Add("KissYourMaid", "KissYourMaid", KissEnableIcon.Png,
+                            (go) => togglePluginEnabled());
                         GearMenu.Buttons.SetText(gearMenuButton, "KissYourMaid is ON");
                         buttonToggled = true;
                     }
                     else
                     {
-                        gearMenuButton = GearMenu.Buttons.Add("KissYourMaid", "KissYourMaid", KissDisableIcon.Png, (go) => togglePluginEnabled());
+                        gearMenuButton = GearMenu.Buttons.Add("KissYourMaid", "KissYourMaid", KissDisableIcon.Png,
+                            (go) => togglePluginEnabled());
                         GearMenu.Buttons.SetText(gearMenuButton, "KissYourMaid is OFF");
                         buttonToggled = false;
                     }
@@ -958,7 +1174,7 @@ namespace COM3D2.KissYourMaid.Plugin
 
             if (iPrevSceneLevel != iSceneLevel) iPrevSceneLevel = iSceneLevel;
 
-            Console.WriteLine("[KissYourMaid] YotogiScene="+bIsYotogiScene+" EditScene="+bIsEditScene);
+            Console.WriteLine("[KissYourMaid] YotogiScene=" + bIsYotogiScene + " EditScene=" + bIsEditScene);
         }
 
         void initTempVariables()
@@ -977,11 +1193,10 @@ namespace COM3D2.KissYourMaid.Plugin
             sTargetMaidPart = "";
             sTargetMaidPartOld = "";
             iConvulsionTimeCounter = -1;
-
         }
 
 
-        #if DEBUG
+#if DEBUG
         void OnGUI()
         {
                 //GUIへのデバッグ表示
@@ -1001,7 +1216,7 @@ namespace COM3D2.KissYourMaid.Plugin
                     }
                 }
         }
-        #endif
+#endif
 
 
         void Update()
@@ -1035,12 +1250,12 @@ namespace COM3D2.KissYourMaid.Plugin
                     //　短押しならプラグイン有効無効をトグルする（長押しはパターンor興奮レベル手動変更）
                     //　１秒間のフレームの1/3…約0.33秒
                     if (iKeyHoldCount < (iFpsMax / 3))
-                    {  
+                    {
                         togglePluginEnabled();
                     }
                 }
             }
-            
+
             if (!bGlobalPluginEnabled)
             {
                 return;
@@ -1048,7 +1263,8 @@ namespace COM3D2.KissYourMaid.Plugin
 
             //　プラグインが有効なシーンであるか判別する
             //　夜伽シーン・エディットモード・撮影モードのいずれかにあり、プラグインがEnabledであること（CBLはエディットが4？）
-            if ((bIsYotogiScene && cfg.bPluginEnabled) || (bIsEditScene && cfg.bPluginEnabledInEdit && cfg.bPluginEnabled))
+            if ((bIsYotogiScene && cfg.bPluginEnabled) ||
+                (bIsEditScene && cfg.bPluginEnabledInEdit && cfg.bPluginEnabled))
             {
                 //　歯車ボタンの更新
                 setButtonState(true);
@@ -1058,17 +1274,19 @@ namespace COM3D2.KissYourMaid.Plugin
                 //　歯車ボタンの更新
                 setButtonState(false);
                 //プラグインが有効なシーンでなければ、ここで抜けて以後の処理を行わない
-                return; 
+                return;
             }
 
             //オーバーライド中の音声の再生が終了したら即再生させる
-            if (bIsVoiceOverriding && !(maid.AudioMan && maid.AudioMan.audiosource.isPlaying) && iFrameCount != iFpsMax) {
+            if (bIsVoiceOverriding && !(maid.AudioMan && maid.AudioMan.audiosource.isPlaying) && iFrameCount != iFpsMax)
+            {
                 //音声終了時に即次の音声再生させる
                 iFrameCount = iFpsMax;
             }
 
             //　約１秒毎に呼び出す
-            if (iFrameCount == iFpsMax) {
+            if (iFrameCount == iFpsMax)
+            {
                 iFrameCount = 0;
 
                 //フェードアウト中は処理しない
@@ -1086,28 +1304,29 @@ namespace COM3D2.KissYourMaid.Plugin
                 getMaidObject();
 
                 //　有効なメイドさんがおり、Bone_Face等が取得済みであること
-                if (iTargetMaid != -1 && maid && maid.ActiveSlotNo != -1 && maidHead) {
-                        //  フェラ判定
-                        checkBlowjobing();
-                        if (!bIsBlowjobing)
-                        {
-                            //  表情等変更処理を実施する
-                            checkFaceDistance();
-                        }
+                if (iTargetMaid != -1 && maid && maid.ActiveSlotNo != -1 && maidHead)
+                {
+                    //  フェラ判定
+                    checkBlowjobing();
+                    if (!bIsBlowjobing)
+                    {
+                        //  表情等変更処理を実施する
+                        checkFaceDistance();
+                    }
                 }
 
                 //　ストップウォッチを止める
                 //sw.Stop();
                 //debugPrintConsole("Stopwatch: " + sw.Elapsed.ToString());
-
             }
-            else {
+            else
+            {
                 iFrameCount++;
             }
 
             //　痙攣処理
             if (cfg.bConvulsionEnabled)
-            { 
+            {
                 if (maid && maid.ActiveSlotNo != -1 && maidHead)
                 {
                     //　痙攣の時間カウント処理（毎フレーム処理）
@@ -1122,35 +1341,32 @@ namespace COM3D2.KissYourMaid.Plugin
 
 
             //　パターン手動変更操作
-            if (Input.GetKey(cfg.keyPluginToggle)) {
-
-                
-                if (Input.GetKeyDown(cfg.keyManualForceAlt)) 
+            if (Input.GetKey(cfg.keyPluginToggle))
+            {
+                if (Input.GetKeyDown(cfg.keyManualForceAlt))
                 {
                     //　パターン手動変更
                     iStateHoldTime = 0; //ステート保持時間をリセットすることで再適用を促す
                     iKeyHoldCount = iFpsMax; //プラグインON/OFFをタイムアウトさせる
                 }
-                else if (Input.GetKeyDown(cfg.keyManualIncrease)) 
+                else if (Input.GetKeyDown(cfg.keyManualIncrease))
                 {
                     //　興奮レベル手動変更＋
                     iExciteLevelMod++;
-                    if (iExciteLevel + iExciteLevelMod <= 4) iStateHoldTime = 0;  //上下限値を越えようとしてなければ再適用する
+                    if (iExciteLevel + iExciteLevelMod <= 4) iStateHoldTime = 0; //上下限値を越えようとしてなければ再適用する
                     iKeyHoldCount = iFpsMax; //プラグインON/OFFをタイムアウトさせる
                 }
-                else if (Input.GetKeyDown(cfg.keyManualDecrease)) 
+                else if (Input.GetKeyDown(cfg.keyManualDecrease))
                 {
                     //　興奮レベル手動変更－
                     iExciteLevelMod--;
-                    if (1 <= iExciteLevel + iExciteLevelMod) iStateHoldTime = 0;  //上下限値を越えようとしてなければ再適用する
+                    if (1 <= iExciteLevel + iExciteLevelMod) iStateHoldTime = 0; //上下限値を越えようとしてなければ再適用する
                     iKeyHoldCount = iFpsMax; //プラグインON/OFFをタイムアウトさせる
                 }
 
                 //押しっぱなしフレーム数のカウント（プラグインON/OFFのタイムアウト用）
                 iKeyHoldCount++;
             }
-
-
         }
 
 
@@ -1249,10 +1465,10 @@ namespace COM3D2.KissYourMaid.Plugin
                             break;
                         }
                     }
+
                     i++;
                 }
             }
-
         }
 
         //　主観視点のカメラ位置を返す
@@ -1271,6 +1487,7 @@ namespace COM3D2.KissYourMaid.Plugin
                     debugPrintConsole(ex.ToString());
                 }*/
             }
+
             return mainCamera.transform;
         }
 
@@ -1280,7 +1497,7 @@ namespace COM3D2.KissYourMaid.Plugin
         {
             //　メイドさんの総数
             //iStockMaidCount = GameMain.Instance.CharacterMgr.GetStockMaidCount();
-            
+
             //「離れている」の時だけ変更する（キス状態に有る時は、一度離れて復元処理をして解放してから、他のメイドさんに切り替えられるようにする）
             if (iStateMajor == 10 && !bIsVoiceOverriding)
             {
@@ -1301,7 +1518,7 @@ namespace COM3D2.KissYourMaid.Plugin
                         {
                             //　メイドさんの部位でカメラと一番近いものとの距離を取得
                             fDistanceToTempMaid = getDistanceToNearestPart(cameraPos, tempMaid);
-                            
+
                             //　より近いメイドさんを対象にする
                             if (fDistanceToTempMaid < fDistanceToNearestMaid)
                             {
@@ -1309,10 +1526,12 @@ namespace COM3D2.KissYourMaid.Plugin
                                 iTargetMaid = i;
                                 maid = tempMaid;
                                 bTargetMaidChanged = true;
-                                debugPrintConsole("NearestMaid: " + iTargetMaid.ToString() + " Distance: " + fDistanceToNearestMaid.ToString());
+                                debugPrintConsole("NearestMaid: " + iTargetMaid.ToString() + " Distance: " +
+                                                  fDistanceToNearestMaid.ToString());
                             }
                         }
                     }
+
                     i++;
                 }
             }
@@ -1326,7 +1545,6 @@ namespace COM3D2.KissYourMaid.Plugin
             Transform[] objList = tempMaid.transform.GetComponentsInChildren<Transform>();
             if (objList.Count() == 0)
             {
-
             }
             else
             {
@@ -1343,46 +1561,53 @@ namespace COM3D2.KissYourMaid.Plugin
                     if (gameobject.name == "Bone_Face" && maidHead == null)
                     {
                         maidHead = gameobject;
-                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart, Vector3.Distance(gameobject.position, cameraPos.position));
+                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart,
+                            Vector3.Distance(gameobject.position, cameraPos.position));
                     }
                     else if (gameobject.name == "Bip01" && maidBip == null)
                     {
                         maidBip = gameobject;
-                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart, Vector3.Distance(gameobject.position, cameraPos.position));
+                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart,
+                            Vector3.Distance(gameobject.position, cameraPos.position));
                     }
                     else if (gameobject.name == "Mune_L_sub" && maidMuneL == null)
                     {
                         maidMuneL = gameobject;
-                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart, Vector3.Distance(gameobject.position, cameraPos.position));
+                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart,
+                            Vector3.Distance(gameobject.position, cameraPos.position));
                     }
                     else if (gameobject.name == "Mune_R_sub" && maidMuneR == null)
                     {
                         maidMuneR = gameobject;
-                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart, Vector3.Distance(gameobject.position, cameraPos.position));
+                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart,
+                            Vector3.Distance(gameobject.position, cameraPos.position));
                     }
                     else if (gameobject.name == "_IK_vagina" && maidKokan == null)
                     {
                         maidKokan = gameobject;
-                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart, Vector3.Distance(gameobject.position, cameraPos.position));
+                        fDistanceToNearestPart = Math.Min(fDistanceToNearestPart,
+                            Vector3.Distance(gameobject.position, cameraPos.position));
                     }
                     else if (cfg.bTargetFoots)
                     {
                         if (gameobject.name == "Bip01 L Foot" && maidFootL == null)
                         {
                             maidFootL = gameobject;
-                            fDistanceToNearestPart = Math.Min(fDistanceToNearestPart, Vector3.Distance(gameobject.position, cameraPos.position));
+                            fDistanceToNearestPart = Math.Min(fDistanceToNearestPart,
+                                Vector3.Distance(gameobject.position, cameraPos.position));
                         }
+
                         if (gameobject.name == "Bip01 R Foot" && maidFootR == null)
                         {
                             maidFootR = gameobject;
-                            fDistanceToNearestPart = Math.Min(fDistanceToNearestPart, Vector3.Distance(gameobject.position, cameraPos.position));
+                            fDistanceToNearestPart = Math.Min(fDistanceToNearestPart,
+                                Vector3.Distance(gameobject.position, cameraPos.position));
                         }
                     }
                 }
             }
 
             return fDistanceToNearestPart;
-
         }
 
 
@@ -1400,7 +1625,6 @@ namespace COM3D2.KissYourMaid.Plugin
                         Transform[] objList = maid.transform.GetComponentsInChildren<Transform>();
                         if (objList.Count() == 0)
                         {
-
                         }
                         else
                         {
@@ -1446,7 +1670,6 @@ namespace COM3D2.KissYourMaid.Plugin
                         }
                     }
                 }
-
             }
         }
 
@@ -1481,7 +1704,6 @@ namespace COM3D2.KissYourMaid.Plugin
 
         private void updateGearMenuButton()
         {
-                {
             if (gearMenuButton == null) return;
 
             UITexture componentInChildren = gearMenuButton.GetComponentInChildren<UITexture>();
@@ -1544,10 +1766,10 @@ namespace COM3D2.KissYourMaid.Plugin
             {
                 if (!bGlobalPluginEnabled) // プラグインが無効化にされた場合
                 {
-                    
                     //　痙攣用のアニメーション速度を戻してカウンタを無効化
                     AnimationState state = this.GetCurrentAnimationState(maid);
-                    if (state != null) {
+                    if (state != null)
+                    {
                         state.speed = 1.0f;
                         iConvulsionTimeCounter = -1;
                     }
@@ -1580,23 +1802,21 @@ namespace COM3D2.KissYourMaid.Plugin
                             {
                                 maid.AudioMan.LoadPlay(sLoopVoiceBackup, 0f, false, true);
                                 debugPrintConsole("voice restore done. " + sLoopVoiceBackup);
-
                             }
                             else
                             {
                                 maid.AudioMan.Stop();
                                 debugPrintConsole("voice stop done. " + sLoopVoiceBackup);
                             }
-
                         }
-
                     }
+
                     //　一時変数の初期化
                     initTempVariables();
                 }
             }
         }
-        
+
 
         //　痙攣処理の時間カウント
         private void convulsionCounter()
@@ -1609,12 +1829,12 @@ namespace COM3D2.KissYourMaid.Plugin
             {
                 //　痙攣用のアニメーション速度を戻してカウンタを無効化
                 AnimationState state = this.GetCurrentAnimationState(maid);
-                if (state != null) {
+                if (state != null)
+                {
                     state.speed = 1.0f;
                     iConvulsionTimeCounter = -1;
                 }
             }
-
         }
 
 
@@ -1626,19 +1846,20 @@ namespace COM3D2.KissYourMaid.Plugin
             {
                 //　興奮度に応じて痙攣確率を変える
                 int iConvulsionChancePercent = 0;
-                switch (iExciteLevel + iExciteLevelMod) {
+                switch (iExciteLevel + iExciteLevelMod)
+                {
                     case 1:
-                    iConvulsionChancePercent = cfg.iConvulsionChancePercentExcite1;
-                    break;
+                        iConvulsionChancePercent = cfg.iConvulsionChancePercentExcite1;
+                        break;
                     case 2:
-                    iConvulsionChancePercent = cfg.iConvulsionChancePercentExcite2;
-                    break;
+                        iConvulsionChancePercent = cfg.iConvulsionChancePercentExcite2;
+                        break;
                     case 3:
-                    iConvulsionChancePercent = cfg.iConvulsionChancePercentExcite3;
-                    break;
+                        iConvulsionChancePercent = cfg.iConvulsionChancePercentExcite3;
+                        break;
                     case 4:
-                    iConvulsionChancePercent = cfg.iConvulsionChancePercentExcite4;
-                    break;
+                        iConvulsionChancePercent = cfg.iConvulsionChancePercentExcite4;
+                        break;
                 }
 
                 //  確率で痙攣させる
@@ -1648,13 +1869,16 @@ namespace COM3D2.KissYourMaid.Plugin
                     //　現在のアニメ－ションの再生スピードを変更する
                     //　（スピードと変更時間はランダムで幅を持たせる）
                     AnimationState state = this.GetCurrentAnimationState(maid);
-                    if (state != null) {
-                        state.speed = cfg.fConvulsionSpeedMultiplierBase + UnityEngine.Random.Range(0f, cfg.fConvulsionSpeedMultiplierRandomExtend);
-                        iConvulsionTimeCounter = cfg.iConvulsionTimeFramesBase + UnityEngine.Random.Range(0, cfg.iConvulsionTimeFramesBaseRandomExtend); ;
+                    if (state != null)
+                    {
+                        state.speed = cfg.fConvulsionSpeedMultiplierBase +
+                                      UnityEngine.Random.Range(0f, cfg.fConvulsionSpeedMultiplierRandomExtend);
+                        iConvulsionTimeCounter = cfg.iConvulsionTimeFramesBase +
+                                                 UnityEngine.Random.Range(0, cfg.iConvulsionTimeFramesBaseRandomExtend);
+                        ;
                     }
                 }
             }
-
         }
 
 
@@ -1672,13 +1896,15 @@ namespace COM3D2.KissYourMaid.Plugin
             float fDistanceToMaidHead = Vector3.Distance(maidHead.transform.position, cameraPos.position);
             fDistanceToTarget = fDistanceToMaidHead;
             sTargetMaidPart = "maidHead";
-            
-            if (cfg.bTargetOtherParts)  //  口以外のパーツをターゲットにするのが有効な場合
+
+            if (cfg.bTargetOtherParts) //  口以外のパーツをターゲットにするのが有効な場合
             {
                 //　胸への距離
                 if (cfg.bTargetMune)
                 {
-                    float fDistanceToMaidMune = Math.Min(Vector3.Distance(maidMuneL.transform.position, cameraPos.position), Vector3.Distance(maidMuneR.transform.position, cameraPos.position));
+                    float fDistanceToMaidMune =
+                        Math.Min(Vector3.Distance(maidMuneL.transform.position, cameraPos.position),
+                            Vector3.Distance(maidMuneR.transform.position, cameraPos.position));
                     //口を近く判定
                     if (fDistanceToMaidMune < fDistanceToTarget + cfg.fCheckOffsetHead)
                     {
@@ -1687,8 +1913,8 @@ namespace COM3D2.KissYourMaid.Plugin
                         fDistanceToTarget = fDistanceToMaidMune + muneSize + cfg.fDistanceOffsetMune;
                         sTargetMaidPart = "maidMune";
                     }
-
                 }
+
                 //　股間への判定
                 if (cfg.bTargetKokan)
                 {
@@ -1699,6 +1925,7 @@ namespace COM3D2.KissYourMaid.Plugin
                         sTargetMaidPart = "maidKokan";
                     }
                 }
+
                 //　足への判定
                 if (cfg.bTargetFoots)
                 {
@@ -1722,26 +1949,40 @@ namespace COM3D2.KissYourMaid.Plugin
             //　---- ステート管理 ----------------------------------------------------
 
             //　距離ステートの変更
-            if (fDistanceToTarget < fDistanceThreshold2) { //　「とても近い」
+            if (fDistanceToTarget < fDistanceThreshold2)
+            {
+                //　「とても近い」
                 iStateMajor = 30;
                 fDistanceThreshold1 = cfg.fDistanceThresholdBase1 + cfg.fDistanceThresholdOffset;
                 fDistanceThreshold2 = cfg.fDistanceThresholdBase2 + cfg.fDistanceThresholdOffset;
-
-            } else if (fDistanceToTarget < fDistanceThreshold1) { //　「近い」
+            }
+            else if (fDistanceToTarget < fDistanceThreshold1)
+            {
+                //　「近い」
                 //　「離れている」から来た時と、「とても近い」から来た時を区別する
-                if (iStateMajorOld < 20) {
+                if (iStateMajorOld < 20)
+                {
                     iStateMajor = 20;
-                } else if (20 <= iStateMajorOld && iStateMajorOld < 30) {
+                }
+                else if (20 <= iStateMajorOld && iStateMajorOld < 30)
+                {
                     iStateMajor = 20;
-                } else if (30 <= iStateMajorOld && iStateMajorOld < 40) {
-                    iStateMajor = 40;
-                } else if (40 <= iStateMajorOld) {
+                }
+                else if (30 <= iStateMajorOld && iStateMajorOld < 40)
+                {
                     iStateMajor = 40;
                 }
+                else if (40 <= iStateMajorOld)
+                {
+                    iStateMajor = 40;
+                }
+
                 fDistanceThreshold1 = cfg.fDistanceThresholdBase1 + cfg.fDistanceThresholdOffset;
                 fDistanceThreshold2 = cfg.fDistanceThresholdBase2;
-
-            } else { //　「離れている」        
+            }
+            else
+            {
+                //　「離れている」
                 iStateMajor = 10;
                 fDistanceThreshold1 = cfg.fDistanceThresholdBase1;
                 fDistanceThreshold2 = cfg.fDistanceThresholdBase2;
@@ -1759,8 +2000,8 @@ namespace COM3D2.KissYourMaid.Plugin
                     //　時間カウンタのリセット
                     iStateHoldTime = 0;
                     //　表情変化時間のランダマイズ
-                    iStateAltTime1 = cfg.iStateAltTime1Base + UnityEngine.Random.Range(0, cfg.iStateAltTime1RandomExtend + 1);
-
+                    iStateAltTime1 = cfg.iStateAltTime1Base +
+                                     UnityEngine.Random.Range(0, cfg.iStateAltTime1RandomExtend + 1);
                 }
             }
 
@@ -1771,8 +2012,9 @@ namespace COM3D2.KissYourMaid.Plugin
                 iExciteLevelMod = 0; //興奮値の手動変更値もリセットする
             }
 
-            else if (iStateMajor == 20 || iStateMajor == 40) {
-                //　時間経過により、一方通行で表情変化      
+            else if (iStateMajor == 20 || iStateMajor == 40)
+            {
+                //　時間経過により、一方通行で表情変化
                 iStateMinor = 0;
                 if (iStateAltTime1 <= iStateHoldTime) iStateMinor = 1;
             }
@@ -1785,10 +2027,9 @@ namespace COM3D2.KissYourMaid.Plugin
                     //　時間カウンタのリセット
                     iStateHoldTime = 0;
                     //　表情変化時間のランダマイズ
-                    iStateAltTime2 = cfg.iStateAltTime2Base + UnityEngine.Random.Range(0, cfg.iStateAltTime2RandomExtend + 1);
-                    
+                    iStateAltTime2 = cfg.iStateAltTime2Base +
+                                     UnityEngine.Random.Range(0, cfg.iStateAltTime2RandomExtend + 1);
                 }
-                
             }
 
             iState = iStateMajor + iStateMinor;
@@ -1802,28 +2043,40 @@ namespace COM3D2.KissYourMaid.Plugin
 
 
             //　興奮度を興奮レベルに変換
-            if (iCurrentExcite < cfg.iExciteLevelThreshold1) {
+            if (iCurrentExcite < cfg.iExciteLevelThreshold1)
+            {
                 iExciteLevel = 1;
-            } else if (cfg.iExciteLevelThreshold1 <= iCurrentExcite && iCurrentExcite < cfg.iExciteLevelThreshold2) {
+            }
+            else if (cfg.iExciteLevelThreshold1 <= iCurrentExcite && iCurrentExcite < cfg.iExciteLevelThreshold2)
+            {
                 iExciteLevel = 2;
-            } else if (cfg.iExciteLevelThreshold2 <= iCurrentExcite && iCurrentExcite < cfg.iExciteLevelThreshold3) {
+            }
+            else if (cfg.iExciteLevelThreshold2 <= iCurrentExcite && iCurrentExcite < cfg.iExciteLevelThreshold3)
+            {
                 iExciteLevel = 3;
-            } else if (cfg.iExciteLevelThreshold3 <= iCurrentExcite) {
+            }
+            else if (cfg.iExciteLevelThreshold3 <= iCurrentExcite)
+            {
                 iExciteLevel = 4;
             }
 
-            //　ピストン速度の判定　（Chu-BLip版用）                        
-            if (bChuBLip && maid) {
+            //　ピストン速度の判定　（Chu-BLip版用）
+            if (bChuBLip && maid)
+            {
                 string sPistonSpeed = "";
 
                 // sPistonSpeed = maid.onahole.motion.playedPistonSeType.ToString();
                 // System.Reflectionを使って文字列でメンバーを取得する（OH版以外ではMaidにonahole以下が存在しないので、上の様に記述するとコンパイルできない）
-                try {
-                    sPistonSpeed = Util.GetObject.ByString(maid , "onahole.motion.playedPistonSeType").ToString();
-                    if (sPistonSpeed != null) {
+                try
+                {
+                    sPistonSpeed = Util.GetObject.ByString(maid, "onahole.motion.playedPistonSeType").ToString();
+                    if (sPistonSpeed != null)
+                    {
                         debugPrintConsole(sPistonSpeed);
                     }
-                } catch(Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     debugPrintConsole(ex.ToString());
                 }
 
@@ -1834,7 +2087,6 @@ namespace COM3D2.KissYourMaid.Plugin
 
                 ////maid.Param.status.first_name と同等のコード
                 //var first_name = Util.GetObject.ByString(maid, "m_Param.status_.first_name") as string;
-
 
 
                 ////特定の型のフィールド一覧は下記で出力できる（デバッグで眺めてもよい）
@@ -1853,21 +2105,31 @@ namespace COM3D2.KissYourMaid.Plugin
 
 
                 //　ピストン速度を興奮度レベルに置き換える
-                if (sPistonSpeed == "低速") {
+                if (sPistonSpeed == "低速")
+                {
                     iExciteLevel = 2;
-                } else if (sPistonSpeed == "中速") {
+                }
+                else if (sPistonSpeed == "中速")
+                {
                     iExciteLevel = 3;
-                } else if (sPistonSpeed == "高速") {
+                }
+                else if (sPistonSpeed == "高速")
+                {
                     iExciteLevel = 4;
-                } else { // "停止" or NO_DATA
+                }
+                else
+                {
+                    // "停止" or NO_DATA
                     iExciteLevel = 1;
                 }
 
                 //　スピードが変わったら音声を改めて適用する
-                if (iExciteLevel != iExciteLevelOld) {
+                if (iExciteLevel != iExciteLevelOld)
+                {
                     bPistonSpeedChanged = true;
                     debugPrintConsole("piston speed changed.");
                 }
+
                 iExciteLevelOld = iExciteLevel;
             }
 
@@ -1875,7 +2137,8 @@ namespace COM3D2.KissYourMaid.Plugin
             if (4 < (iExciteLevel + iExciteLevelMod)) iExciteLevelMod = 4 - iExciteLevel; // 手動変更値の頭打ち
             if ((iExciteLevel + iExciteLevelMod) < 1) iExciteLevelMod = 1 - iExciteLevel; //手動変更値の底打ち
             iExciteLevelModded = Math.Min(4, iExciteLevel + iExciteLevelMod);
-            debugPrintConsole("iExciteLevel, Mod, Modded = " + iExciteLevel + " , " + iExciteLevelMod + " , " + iExciteLevelModded);
+            debugPrintConsole("iExciteLevel, Mod, Modded = " + iExciteLevel + " , " + iExciteLevelMod + " , " +
+                              iExciteLevelModded);
 
 
             //　---- 喋らせる ----------------------------------------------------
@@ -1884,48 +2147,67 @@ namespace COM3D2.KissYourMaid.Plugin
 
             //　ループ音声が流れているときはバックアップする（オーバライドしたものは除く）
             //　夜伽前の会話シーンなど、ループ音声が拾えない時もあるので注意すること
-            if (cfg.bVoiceOverrideEnabled) {
-
+            if (cfg.bVoiceOverrideEnabled)
+            {
                 //　ループ音声のバックアップ（通常版）
-                if (!bChuBLip && !bIsVoiceOverriding && maid.AudioMan.audiosource.loop && maid.AudioMan.audiosource.isPlaying) {
-                  bOverrideInterrupted = false;
-                  sLoopVoiceBackup = maid.AudioMan.FileName;
-                  debugPrintConsole("voice backup done. " + sLoopVoiceBackup);
+                if (!bChuBLip && !bIsVoiceOverriding && maid.AudioMan.audiosource.loop &&
+                    maid.AudioMan.audiosource.isPlaying)
+                {
+                    bOverrideInterrupted = false;
+                    sLoopVoiceBackup = maid.AudioMan.FileName;
+                    debugPrintConsole("voice backup done. " + sLoopVoiceBackup);
                 }
 
                 //　一回再生音声のバックアップ（ChuBLip版）
-                if (bChuBLip && !bIsVoiceOverriding && !bIsEditScene) {
-                  bOverrideInterrupted = false;
-                  sLoopVoiceBackup = maid.AudioMan.FileName;
-                  debugPrintConsole("voice backup done. " + sLoopVoiceBackup);
+                if (bChuBLip && !bIsVoiceOverriding && !bIsEditScene)
+                {
+                    bOverrideInterrupted = false;
+                    sLoopVoiceBackup = maid.AudioMan.FileName;
+                    debugPrintConsole("voice backup done. " + sLoopVoiceBackup);
                 }
-                
 
-                //　音声オーバライド判定開始ここから               
+
+                //　音声オーバライド判定開始ここから
                 bool bAllowVoiceOverride = false;
 
                 //　「とても近い」
-                if (iStateMajor == 30) {
+                if (iStateMajor == 30)
+                {
                     // 割り込みされた後、バックアップが拾えてない状況ではない
-                    if (!bOverrideInterrupted) {
+                    if (!bOverrideInterrupted)
+                    {
                         //オーバーライドまたは音声表情変更のチェック
-                        if (!maid.AudioMan.audiosource.isPlaying) { //音声が止まっていたらオーバーライドまたは音声入れ替え実行
+                        if (!maid.AudioMan.audiosource.isPlaying)
+                        {
+                            //音声が止まっていたらオーバーライドまたは音声入れ替え実行
                             bAllowVoiceOverride = true;
-                        } else if (maid.AudioMan.audiosource.loop) { //ループ音声再生中ならオーバーライド実行
+                        }
+                        else if (maid.AudioMan.audiosource.loop)
+                        {
+                            //ループ音声再生中ならオーバーライド実行
                             bAllowVoiceOverride = true;
-                        } else if (bIsVoiceOverriding) { //オーバーライド中
-                            if (playingMaid != maid || playingTargetPart != sTargetMaidPart || iStateHoldTime == 0) { //メイドか部位が変わったら音声入れ替え または タイマーが0なら表情変更
+                        }
+                        else if (bIsVoiceOverriding)
+                        {
+                            //オーバーライド中
+                            if (playingMaid != maid || playingTargetPart != sTargetMaidPart || iStateHoldTime == 0)
+                            {
+                                //メイドか部位が変わったら音声入れ替え または タイマーが0なら表情変更
                                 bAllowVoiceOverride = true;
                             }
                         }
 
                         //　ChuBLip版では、ループ音声が夜伽で使われないので、上の条件によらず許可する
-                        if (bChuBLip) {
-                            if (!bIsVoiceOverriding || iStateHoldTime == 0) {
+                        if (bChuBLip)
+                        {
+                            if (!bIsVoiceOverriding || iStateHoldTime == 0)
+                            {
                                 bAllowVoiceOverride = true;
                             }
+
                             //　ChuBLip版では、ピストン速度に変化があった時に、強制的に新しい音声を再生しなおす
-                            if (bPistonSpeedChanged) {
+                            if (bPistonSpeedChanged)
+                            {
                                 bPistonSpeedChanged = false;
                                 bAllowVoiceOverride = true;
                                 iStateHoldTime = 0;
@@ -1935,58 +2217,74 @@ namespace COM3D2.KissYourMaid.Plugin
                 }
 
                 //　上記でオーバーライドが許可されたら実際に再生する
-                if (bAllowVoiceOverride) {
+                if (bAllowVoiceOverride)
+                {
                     bIsVoiceOverriding = true;
-                    
+
                     string[][] sLoopVoice30;
 
                     string uniqueName = maid.status.personal.uniqueName;
                     int customId = -1;
 
                     //メイドの名前からカスタムIDを取得
-                    for (int i=0; i<cfg.sLoopVoice30CustomMaidName.Length; i++) {
-                        if (cfg.sLoopVoice30CustomMaidName[i] == maid.status.lastName + maid.status.firstName) {
+                    for (int i = 0; i < cfg.sLoopVoice30CustomMaidName.Length; i++)
+                    {
+                        if (cfg.sLoopVoice30CustomMaidName[i] == maid.status.lastName + maid.status.firstName)
+                        {
                             customId = i;
                             break;
                         }
                     }
 
                     //メイドと部位に対応した音声取得
-                    if (sTargetMaidPart == "maidHead") {
+                    if (sTargetMaidPart == "maidHead")
+                    {
                         sLoopVoice30 = getLoopVoice(uniqueName, "Excite", customId);
                         //ボイスがなければ無垢を設定
-                        if (sLoopVoice30 == null || sLoopVoice30.Length < iExciteLevelModded || sLoopVoice30[iExciteLevelModded-1].Length == 0) sLoopVoice30 = cfg.sLoopVoice30MukuExcite;
-                    } else if (sTargetMaidPart == "maidKokan") {
+                        if (sLoopVoice30 == null || sLoopVoice30.Length < iExciteLevelModded ||
+                            sLoopVoice30[iExciteLevelModded - 1].Length == 0) sLoopVoice30 = cfg.sLoopVoice30MukuExcite;
+                    }
+                    else if (sTargetMaidPart == "maidKokan")
+                    {
                         sLoopVoice30 = getLoopVoice(uniqueName, "Kokan", customId);
                         //ボイスがなければMuneを設定
-                        if (sLoopVoice30 == null || sLoopVoice30.Length < iExciteLevelModded || sLoopVoice30[iExciteLevelModded-1].Length == 0) sLoopVoice30 = getLoopVoice(uniqueName, "Mune", customId);
+                        if (sLoopVoice30 == null || sLoopVoice30.Length < iExciteLevelModded ||
+                            sLoopVoice30[iExciteLevelModded - 1].Length == 0)
+                            sLoopVoice30 = getLoopVoice(uniqueName, "Mune", customId);
                         //ボイスがなければ無垢を設定
-                        if (sLoopVoice30 == null || sLoopVoice30.Length < iExciteLevelModded || sLoopVoice30[iExciteLevelModded-1].Length == 0) sLoopVoice30 = cfg.sLoopVoice30MukuMune;
-                    } else {
+                        if (sLoopVoice30 == null || sLoopVoice30.Length < iExciteLevelModded ||
+                            sLoopVoice30[iExciteLevelModded - 1].Length == 0) sLoopVoice30 = cfg.sLoopVoice30MukuMune;
+                    }
+                    else
+                    {
                         sLoopVoice30 = getLoopVoice(uniqueName, "Mune", customId);
                         //ボイスがなければ無垢を設定
-                        if (sLoopVoice30 == null || sLoopVoice30.Length < iExciteLevelModded || sLoopVoice30[iExciteLevelModded-1].Length == 0) sLoopVoice30 = cfg.sLoopVoice30MukuMune;
+                        if (sLoopVoice30 == null || sLoopVoice30.Length < iExciteLevelModded ||
+                            sLoopVoice30[iExciteLevelModded - 1].Length == 0) sLoopVoice30 = cfg.sLoopVoice30MukuMune;
                     }
 
                     //ボイスファイル 可変長に対応
-					string sVoiceFileName = sLoopVoice30[iExciteLevelModded-1][ UnityEngine.Random.Range(0 , sLoopVoice30[iExciteLevelModded-1].Length) ];
+                    string sVoiceFileName =
+                        sLoopVoice30[iExciteLevelModded - 1][
+                            UnityEngine.Random.Range(0, sLoopVoice30[iExciteLevelModded - 1].Length)];
 
                     //Console.WriteLine("playingMaid="+playingMaid.status.personal.uniqueName+" , playingTargetPart="+playingTargetPart+" , playingExciteLevel="+playingExciteLevel);
 
                     //音声を再生 キスのループ音声終了時 or 音声が変わっている or 対象メイドか部位かレベルが変わった
                     if (fLoopVoiceEndTime < Time.time || sLoopVoiceOverriding != maid.AudioMan.FileName
-                    || playingMaid != maid || playingTargetPart != sTargetMaidPart || playingExciteLevel != iExciteLevelModded) {
+                                                      || playingMaid != maid || playingTargetPart != sTargetMaidPart ||
+                                                      playingExciteLevel != iExciteLevelModded)
+                    {
                         maid.AudioMan.LoadPlay(sVoiceFileName, 0f, false, true); //ループで再生
-                        Console.WriteLine("[KissYourMaid] sLoopVoice30="+sVoiceFileName);
+                        Console.WriteLine("[KissYourMaid] sLoopVoice30=" + sVoiceFileName);
                         //ループ音声の終了時間
                         fLoopVoiceEndTime = Time.time + maid.AudioMan.audiosource.clip.length;
                         //再生を始めたファイル名、メイド、部位、レベルを記憶
                         sLoopVoiceOverriding = maid.AudioMan.FileName;
                         playingMaid = maid;
                         playingTargetPart = sTargetMaidPart;
-                        playingExciteLevel= iExciteLevelModded;
+                        playingExciteLevel = iExciteLevelModded;
                     }
-
                 }
 
 
@@ -1995,15 +2293,16 @@ namespace COM3D2.KissYourMaid.Plugin
                 //　オーバライド状態を一度解除し、バックアップ音声を拾い直す（キスしながらイッてぐったりしたメイドさんに、イク前の発情ボイスを復元してしまうといった事故を防ぐ）
 
                 //　音声オーバライド状態で…
-                if (bIsVoiceOverriding) {
-
+                if (bIsVoiceOverriding)
+                {
                     //　音を切り替えるタイミングではないのに…
                     if ((iStateMajor == 30 || iStateHoldTime != 0)
-                    || (iStateMajor == 20 || iStateHoldTime == iStateAltTime1)
-                    || (iStateMajor == 40 || iStateHoldTime == iStateAltTime1)) {
-
+                        || (iStateMajor == 20 || iStateHoldTime == iStateAltTime1)
+                        || (iStateMajor == 40 || iStateHoldTime == iStateAltTime1))
+                    {
                         //　再生中の音声が、オーバライドした音声と一致しないなら、割り込まれ状態と判断する
-                        if (maid.AudioMan.FileName != sLoopVoiceOverriding) {
+                        if (maid.AudioMan.FileName != sLoopVoiceOverriding)
+                        {
                             bOverrideInterrupted = true;
                             bIsVoiceOverriding = false;
                             sLoopVoiceBackup = "";
@@ -2020,8 +2319,8 @@ namespace COM3D2.KissYourMaid.Plugin
                 }
 
                 //　音声オーバライドの停止と復元
-                if (iStateMajor != 30 && bIsVoiceOverriding) {
-
+                if (iStateMajor != 30 && bIsVoiceOverriding)
+                {
                     //　オーバライド状態を解除
                     bIsVoiceOverriding = false;
                     bOverrideInterrupted = false;
@@ -2034,14 +2333,19 @@ namespace COM3D2.KissYourMaid.Plugin
                     if (!bChuBLip)
                     {
                         //　復元もしくは停止（170206追記 エディットor撮影ではループ音声を拾えていると延々流してしまうので停止する）
-                        if (sLoopVoiceBackup != "" && !bIsEditScene) {
-                            maid.AudioMan.LoadPlay(sLoopVoiceBackup , 0f , false, true);
+                        if (sLoopVoiceBackup != "" && !bIsEditScene)
+                        {
+                            maid.AudioMan.LoadPlay(sLoopVoiceBackup, 0f, false, true);
                             debugPrintConsole("voice restore done. " + sLoopVoiceBackup);
-                        } else {
+                        }
+                        else
+                        {
                             maid.AudioMan.Stop();
                             debugPrintConsole("voice stop done. " + sLoopVoiceBackup);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         //　Chu-B Lip版は復元をせず流しっぱなし（現状、音声セリフ付きの音を復元してしまい不自然になることがある）
                         //　ただしエディットor撮影のときは止める
                         if (bIsEditScene)
@@ -2051,7 +2355,6 @@ namespace COM3D2.KissYourMaid.Plugin
                         }
                     }
                 }
-
             }
 
 
@@ -2063,14 +2366,16 @@ namespace COM3D2.KissYourMaid.Plugin
             //　遷移直後かカウンタリセット時のタイミングで適用
             if ((iStateHoldTime == 0)
                 || (iStateMajor == 20 && iStateHoldTime == iStateAltTime1)
-                || (iStateMajor == 40 && iStateHoldTime == iStateAltTime1)) {
+                || (iStateMajor == 40 && iStateHoldTime == iStateAltTime1))
+            {
                 bAllowChangeFaceAnime = true;
             }
 
             int iRandomFace = 0;
-            if (bAllowChangeFaceAnime) {
+            if (bAllowChangeFaceAnime)
+            {
                 string sFaceAnimeName = "";
-                
+
                 if (!cfg.bFukigenEnabled)
                 {
                     //不機嫌モードでない
@@ -2078,7 +2383,6 @@ namespace COM3D2.KissYourMaid.Plugin
                     {
                         iRandomFace = UnityEngine.Random.Range(0, cfg.sFaceAnime20.Length);
                         sFaceAnimeName = cfg.sFaceAnime20[iRandomFace];
-
                     }
 
                     if (iState == 21)
@@ -2104,13 +2408,15 @@ namespace COM3D2.KissYourMaid.Plugin
                         if (sTargetMaidPart == "maidHead")
                         {
                             //口へのキスの場合
-                            iRandomFace = UnityEngine.Random.Range(0, cfg.sFaceAnime30Excite[iExciteLevelModded - 1].Length);
+                            iRandomFace = UnityEngine.Random.Range(0,
+                                cfg.sFaceAnime30Excite[iExciteLevelModded - 1].Length);
                             sFaceAnimeName = cfg.sFaceAnime30Excite[iExciteLevelModded - 1][iRandomFace];
                         }
                         else
                         {
                             //口以外へのキスの場合
-                            iRandomFace = UnityEngine.Random.Range(0, cfg.sFaceAnime30ExciteMune[iExciteLevelModded - 1].Length);
+                            iRandomFace = UnityEngine.Random.Range(0,
+                                cfg.sFaceAnime30ExciteMune[iExciteLevelModded - 1].Length);
                             sFaceAnimeName = cfg.sFaceAnime30ExciteMune[iExciteLevelModded - 1][iRandomFace];
                         }
                     }
@@ -2122,7 +2428,6 @@ namespace COM3D2.KissYourMaid.Plugin
                     {
                         iRandomFace = UnityEngine.Random.Range(0, cfg.sFaceAnime20Fukigen.Length);
                         sFaceAnimeName = cfg.sFaceAnime20Fukigen[iRandomFace];
-
                     }
 
                     if (iState == 21)
@@ -2148,22 +2453,25 @@ namespace COM3D2.KissYourMaid.Plugin
                         if (sTargetMaidPart == "maidHead")
                         {
                             //口へのキスの場合
-                            iRandomFace = UnityEngine.Random.Range(0, cfg.sFaceAnime30FukigenExcite[iExciteLevelModded - 1].Length);
+                            iRandomFace = UnityEngine.Random.Range(0,
+                                cfg.sFaceAnime30FukigenExcite[iExciteLevelModded - 1].Length);
                             sFaceAnimeName = cfg.sFaceAnime30FukigenExcite[iExciteLevelModded - 1][iRandomFace];
-                        } else {
+                        }
+                        else
+                        {
                             //口以外へのキスの場合
-                            iRandomFace = UnityEngine.Random.Range(0, cfg.sFaceAnime30FukigenExciteMune[iExciteLevelModded - 1].Length);
+                            iRandomFace = UnityEngine.Random.Range(0,
+                                cfg.sFaceAnime30FukigenExciteMune[iExciteLevelModded - 1].Length);
                             sFaceAnimeName = cfg.sFaceAnime30FukigenExciteMune[iExciteLevelModded - 1][iRandomFace];
                         }
                     }
-
                 }
 
                 //　""か"変更しない"でなければ、フェイスアニメを適用する
-                if (sFaceAnimeName != "" && sFaceAnimeName != "変更しない") {
-                    maid.FaceAnime(sFaceAnimeName , cfg.fAnimeFadeTime , 0);
+                if (sFaceAnimeName != "" && sFaceAnimeName != "変更しない")
+                {
+                    maid.FaceAnime(sFaceAnimeName, cfg.fAnimeFadeTime, 0);
                 }
-
             }
 
 
@@ -2173,11 +2481,10 @@ namespace COM3D2.KissYourMaid.Plugin
 
             if (iStateMajor != 10 && bAllowChangeFaceAnime)
             {
-
                 string sFaceBlendCurrent = maid.FaceName3;
                 debugPrintConsole(sFaceBlendCurrent);
 
-                if (sFaceBlendCurrent == "") sFaceBlendCurrent = "頬０涙０";  // 背景選択時、スキル選択時は、"" が返ってきてエラーが出るため
+                if (sFaceBlendCurrent == "") sFaceBlendCurrent = "頬０涙０"; // 背景選択時、スキル選択時は、"" が返ってきてエラーが出るため
 
                 string sCurrentCheek = "";
                 string sCurrentTears = "";
@@ -2198,8 +2505,8 @@ namespace COM3D2.KissYourMaid.Plugin
 
 
                 //　どのステート対しても、同じフェイスブレンドを適用する（ステート毎に変えるつもりだったが、実際やってみたらいまいちだった）
-                iOverrideCheek = 2;     //"頬２"
-                iOverrideTears = 0;     //"涙０"
+                iOverrideCheek = 2; //"頬２"
+                iOverrideTears = 0; //"涙０"
 
                 //　顔目追従
                 if (iState != 40)
@@ -2211,37 +2518,57 @@ namespace COM3D2.KissYourMaid.Plugin
                             //　不機嫌モードでない
                             if (UnityEngine.Random.Range(0, 100) < cfg.iPercentLookAway)
                             {
-                                if (cfg.bLookAwayOnlyEye) {
+                                if (cfg.bLookAwayOnlyEye)
+                                {
                                     maid.EyeToCamera(Maid.EyeMoveType.目だけそらす, cfg.fAnimeFadeTime);
-                                } else {
+                                }
+                                else
+                                {
                                     maid.EyeToCamera(Maid.EyeMoveType.顔をそらす, cfg.fAnimeFadeTime);
                                 }
-                            } else {
-                                maid.EyeToCamera(Maid.EyeMoveType.目と顔を向ける, cfg.fAnimeFadeTime);
                             }
-                        } else {
-                            //　不機嫌モード
-                            if (UnityEngine.Random.Range(0, 100) < cfg.iPercentLookAwayFukigen)
+                            else
                             {
-                                if (cfg.bLookAwayOnlyEyeFukigen) {
-                                    maid.EyeToCamera(Maid.EyeMoveType.目だけそらす, cfg.fAnimeFadeTime);
-                                } else {
-                                    maid.EyeToCamera(Maid.EyeMoveType.顔をそらす, cfg.fAnimeFadeTime);
-                                }
-                            } else {
                                 maid.EyeToCamera(Maid.EyeMoveType.目と顔を向ける, cfg.fAnimeFadeTime);
                             }
                         }
-                    } else {
-                        //　顔以外のところは半々で顔を向ける
-                        if (cfg.iPercentLookAwayOtherParts > 0 && UnityEngine.Random.Range(0, 100) < cfg.iPercentLookAwayOtherParts)
+                        else
                         {
-                            if (cfg.bLookAwayOnlyEyeOtherParts) {
+                            //　不機嫌モード
+                            if (UnityEngine.Random.Range(0, 100) < cfg.iPercentLookAwayFukigen)
+                            {
+                                if (cfg.bLookAwayOnlyEyeFukigen)
+                                {
+                                    maid.EyeToCamera(Maid.EyeMoveType.目だけそらす, cfg.fAnimeFadeTime);
+                                }
+                                else
+                                {
+                                    maid.EyeToCamera(Maid.EyeMoveType.顔をそらす, cfg.fAnimeFadeTime);
+                                }
+                            }
+                            else
+                            {
+                                maid.EyeToCamera(Maid.EyeMoveType.目と顔を向ける, cfg.fAnimeFadeTime);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //　顔以外のところは半々で顔を向ける
+                        if (cfg.iPercentLookAwayOtherParts > 0 &&
+                            UnityEngine.Random.Range(0, 100) < cfg.iPercentLookAwayOtherParts)
+                        {
+                            if (cfg.bLookAwayOnlyEyeOtherParts)
+                            {
                                 maid.EyeToCamera(Maid.EyeMoveType.目だけそらす, cfg.fAnimeFadeTime);
-                            } else {
+                            }
+                            else
+                            {
                                 maid.EyeToCamera(Maid.EyeMoveType.顔をそらす, cfg.fAnimeFadeTime);
                             }
-                        } else {
+                        }
+                        else
+                        {
                             maid.EyeToCamera(Maid.EyeMoveType.目と顔を向ける, cfg.fAnimeFadeTime);
                         }
                     }
@@ -2289,7 +2616,6 @@ namespace COM3D2.KissYourMaid.Plugin
                 maid.FaceBlend(sChangeBlend);
 
                 debugPrintConsole("FaceBlendLevel=" + iChangeCheek + " , " + iChangeTears + " , " + sChangeYodare);
-
             }
 
 
@@ -2307,18 +2633,18 @@ namespace COM3D2.KissYourMaid.Plugin
 
 
             debugPrintConsole("Level=" + iSceneLevel + " bIsYotogi=" + bIsYotogiScene +
-                           " iState=" + iState + " fDistanceToTarget=" + fDistanceToTarget);
+                              " iState=" + iState + " fDistanceToTarget=" + fDistanceToTarget);
         }
 
 
         //　フェイスアニメ・フェイスブレンドのバックアップ
         private void backupFace()
         {
-          sFaceAnimeBackup = maid.ActiveFace;
-          sFaceBlendBackup = maid.FaceName3;
-          //　頭の向き追従状態も保存したいが何処に保存されているか分からない
+            sFaceAnimeBackup = maid.ActiveFace;
+            sFaceBlendBackup = maid.FaceName3;
+            //　頭の向き追従状態も保存したいが何処に保存されているか分からない
 
-          debugPrintConsole("face backup done. " + sFaceAnimeBackup + " , " + sFaceBlendBackup);
+            debugPrintConsole("face backup done. " + sFaceAnimeBackup + " , " + sFaceBlendBackup);
         }
 
 
@@ -2326,12 +2652,13 @@ namespace COM3D2.KissYourMaid.Plugin
         private void restoreFace()
         {
             //　フェイスアニメの復元
-            if (sFaceAnimeBackup != "") {
-                maid.FaceAnime(sFaceAnimeBackup , cfg.fAnimeFadeTime * 2 , 0);
+            if (sFaceAnimeBackup != "")
+            {
+                maid.FaceAnime(sFaceAnimeBackup, cfg.fAnimeFadeTime * 2, 0);
             }
 
             //　フェイスブレンドの復元
-            //maid.FaceBlend(sFaceBlendBackup); 
+            //maid.FaceBlend(sFaceBlendBackup);
             //　近づいた時の状況を復元するので、離れた時にスキルが変わっていると表情が食い違って不自然になることがあるが、現状いい方法がないので保留…
             //　フェイスブレンドも復元するつもりだったが、突然素に戻ったようになってしまうことが有ったので、戻さないようにした
 
@@ -2354,7 +2681,6 @@ namespace COM3D2.KissYourMaid.Plugin
             sFaceBlendBackup = "";
 
             debugPrintConsole("face restore done. " + sFaceAnimeBackup + " , " + sFaceBlendBackup);
-
         }
 
 
@@ -2364,40 +2690,43 @@ namespace COM3D2.KissYourMaid.Plugin
             string sceneName = GameMain.Instance.GetNowSceneName();
             bIsYotogiScene = sceneName.StartsWith("SceneYotogi") || sceneName.StartsWith("SceneVR");
         }
-        
+
 
         //　エディットor撮影シーンにいるかをチェック
         private void checkEditScene()
         {
-            bIsEditScene = (GameMain.Instance.GetNowSceneName() == "SceneEdit" || GameMain.Instance.GetNowSceneName() == "ScenePhotoMode");
+            bIsEditScene = (GameMain.Instance.GetNowSceneName() == "SceneEdit" ||
+                            GameMain.Instance.GetNowSceneName() == "ScenePhotoMode");
         }
 
 
         //フェラしてるかチェックし、フェラし始めた時に顔追従を解除する
         private void checkBlowjobing()
         {
-
             if (maid && bIsYotogiScene)
             {
                 //メイドさんのモーションファイル名に含まれる文字列で判別させる
                 sLastAnimeFileName = maid.body0.LastAnimeFN;
 
-                if (sLastAnimeFileName != null) {
-
+                if (sLastAnimeFileName != null)
+                {
                     bIsBlowjobing = false;
-                    
+
                     if (sLastAnimeFileName.Contains("fera")) bIsBlowjobing = true; //フェラ
                     if (sLastAnimeFileName.Contains("sixnine")) bIsBlowjobing = true; //シックスナイン
                     if (sLastAnimeFileName.Contains("_ir_")) bIsBlowjobing = true; //イラマ
                     if (sLastAnimeFileName.Contains("_kuti")) bIsBlowjobing = true; //乱交３Ｐ
                     if (sLastAnimeFileName.Contains("housi")) bIsBlowjobing = true; //乱交奉仕
-                  
-                    if (sLastAnimeFileName.Contains("taiki")) { bIsBlowjobing = false; //待機中は含めない
+
+                    if (sLastAnimeFileName.Contains("taiki"))
+                    {
+                        bIsBlowjobing = false; //待機中は含めない
                         if (sLastAnimeFileName.Contains("ir_in_taiki")) bIsBlowjobing = true; //咥え始めはフェラに含める
                         if (sLastAnimeFileName.Contains("dt_in_taiki")) bIsBlowjobing = true; //咥え始めはフェラに含める
                         if (sLastAnimeFileName.Contains("kuti_in_taiki")) bIsBlowjobing = true; //咥え始めはフェラに含める
                         if (sLastAnimeFileName.Contains("kutia_in_taiki")) bIsBlowjobing = true; //咥え始めはフェラに含める
                     }
+
                     if (sLastAnimeFileName.Contains("shaseigo")) bIsBlowjobing = false; //射精後は含めない
                     if (sLastAnimeFileName.Contains("surituke")) bIsBlowjobing = false; //乱交３Ｐ擦り付け時は咥えないのでは含めない
 
@@ -2407,14 +2736,19 @@ namespace COM3D2.KissYourMaid.Plugin
                     {
                         if (sLastAnimeFileName != sLastAnimeFileNameOld)
                         {
-                            if (cfg.bDontLookAtMeInFellatio){
+                            if (cfg.bDontLookAtMeInFellatio)
+                            {
                                 maid.EyeToCamera((Maid.EyeMoveType)0, 0f);
-                            } else {
+                            }
+                            else
+                            {
                                 maid.EyeToCamera((Maid.EyeMoveType)6, 0f);
                             }
+
                             debugPrintConsole("EyeMoveType reset done. ");
                         }
                     }
+
                     sLastAnimeFileNameOld = sLastAnimeFileName;
                 }
             }
@@ -2423,16 +2757,18 @@ namespace COM3D2.KissYourMaid.Plugin
         private AnimationState GetCurrentAnimationState(Maid maid)
         {
             AnimationState state = null;
-            
+
             // アニメーション取得
             Animation anime = maid.body0.GetAnimation();
-            if (anime != null) {
+            if (anime != null)
+            {
                 // アニメーション状態取得
-                state = anime[ maid.body0.LastAnimeFN ];
+                state = anime[maid.body0.LastAnimeFN];
             }
+
             return state;
         }
-        
+
         //　デバッグ用コンソール出力メソッド
         [Conditional("DEBUG")]
         private void debugPrintConsole(string s)
@@ -2455,13 +2791,13 @@ namespace COM3D2.KissYourMaid.Plugin
                             "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"
                         );
                     }
+
                     return png;
                 }
             }
 
             static byte[] png = null;
         }
-
 
 
         // GearMenu用のアイコン（無効時）
@@ -2478,16 +2814,14 @@ namespace COM3D2.KissYourMaid.Plugin
                             "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"
                         );
                     }
+
                     return png;
                 }
             }
 
             static byte[] png = null;
         }
-
     }
-
-
 }
 
 
@@ -2552,6 +2886,7 @@ namespace Util
                 {
                     type = instance.GetType();
                 }
+
                 if (type == null)
                 {
                     return null;
@@ -2565,8 +2900,10 @@ namespace Util
                 {
                     return null;
                 }
+
                 instance = fi.GetValue(instance);
             }
+
             return instance;
         }
 
@@ -2581,6 +2918,7 @@ namespace Util
                     return type;
                 }
             }
+
             return null;
         }
     }
@@ -2606,12 +2944,18 @@ namespace GearMenu
         /// <summary>
         /// 識別名
         /// </summary>
-        public static string Name { get { return Name_; } }
+        public static string Name
+        {
+            get { return Name_; }
+        }
 
         /// <summary>
         /// バージョン文字列
         /// </summary>
-        public static string Version { get { return Version_; } }
+        public static string Version
+        {
+            get { return Version_; }
+        }
 
         /// <summary>
         /// 歯車メニューにボタンを追加
@@ -2659,10 +3003,14 @@ namespace GearMenu
         /// }
         /// </code>
         /// </example>
-        public static GameObject Add(string name, UnityInjector.PluginBase plugin, byte[] pngData, Action<GameObject> action)
+        public static GameObject Add(string name, UnityInjector.PluginBase plugin, byte[] pngData,
+            Action<GameObject> action)
         {
-            var pluginNameAttr = Attribute.GetCustomAttribute(plugin.GetType(), typeof(PluginNameAttribute)) as PluginNameAttribute;
-            var pluginVersionAttr = Attribute.GetCustomAttribute(plugin.GetType(), typeof(PluginVersionAttribute)) as PluginVersionAttribute;
+            var pluginNameAttr =
+                Attribute.GetCustomAttribute(plugin.GetType(), typeof(PluginNameAttribute)) as PluginNameAttribute;
+            var pluginVersionAttr =
+                Attribute.GetCustomAttribute(plugin.GetType(),
+                    typeof(PluginVersionAttribute)) as PluginVersionAttribute;
             string pluginName = (pluginNameAttr == null) ? plugin.Name : pluginNameAttr.Name;
             string pluginVersion = (pluginVersionAttr == null) ? string.Empty : pluginVersionAttr.Version;
             string label = string.Format("{0} {1}", pluginName, pluginVersion);
@@ -2789,8 +3137,10 @@ namespace GearMenu
                     NGUITools.Destroy(goButton);
                     goButton = null;
                 }
+
                 throw;
             }
+
             return goButton;
         }
 
@@ -2853,21 +3203,25 @@ namespace GearMenu
             {
                 return;
             }
+
             var tex = uiTexture.mainTexture as Texture2D;
             if (tex == null)
             {
                 return;
             }
+
             for (int x = 1; x < tex.width - 1; x++)
             {
                 tex.SetPixel(x, 0, color);
                 tex.SetPixel(x, tex.height - 1, color);
             }
+
             for (int y = 1; y < tex.height - 1; y++)
             {
                 tex.SetPixel(0, y, color);
                 tex.SetPixel(tex.width - 1, y, color);
             }
+
             tex.Apply();
         }
 
@@ -3012,8 +3366,16 @@ namespace GearMenu
             return targetVersion;
         }
 
-        public static SystemShortcut SysShortcut { get { return GameMain.Instance.SysShortcut; } }
-        public static UIPanel SysShortcutPanel { get { return SysShortcut.GetComponent<UIPanel>(); } }
+        public static SystemShortcut SysShortcut
+        {
+            get { return GameMain.Instance.SysShortcut; }
+        }
+
+        public static UIPanel SysShortcutPanel
+        {
+            get { return SysShortcut.GetComponent<UIPanel>(); }
+        }
+
         public static UISprite SysShortcutExplanation
         {
             get
@@ -3024,13 +3386,31 @@ namespace GearMenu
                 {
                     return null;
                 }
+
                 return fi.GetValue(SysShortcut) as UISprite;
             }
         }
-        public static GameObject Base { get { return SysShortcut.gameObject.transform.Find("Base").gameObject; } }
-        public static UISprite BaseSprite { get { return Base.GetComponent<UISprite>(); } }
-        public static GameObject Grid { get { return Base.gameObject.transform.Find("Grid").gameObject; } }
-        public static UIGrid GridUI { get { return Grid.GetComponent<UIGrid>(); } }
+
+        public static GameObject Base
+        {
+            get { return SysShortcut.gameObject.transform.Find("Base").gameObject; }
+        }
+
+        public static UISprite BaseSprite
+        {
+            get { return Base.GetComponent<UISprite>(); }
+        }
+
+        public static GameObject Grid
+        {
+            get { return Base.gameObject.transform.Find("Grid").gameObject; }
+        }
+
+        public static UIGrid GridUI
+        {
+            get { return Grid.GetComponent<UIGrid>(); }
+        }
+
         public static readonly Color DefaultFrameColor = new Color(1f, 1f, 1f, 0f);
 
         // UIGrid.onReposition処理用のクラス
@@ -3117,12 +3497,14 @@ namespace GearMenu
             }
 
             // オンライン時のボタンの並び順。インデクスの若い側が右になる
-            static string[] OnlineButtonNames = new string[] {
+            static string[] OnlineButtonNames = new string[]
+            {
                 "Config", "Ss", "SsUi", "Shop", "ToTitle", "Info", "Exit"
             };
 
             // オフライン時のボタンの並び順。インデクスの若い側が右になる
-            static string[] OfflineButtonNames = new string[] {
+            static string[] OfflineButtonNames = new string[]
+            {
                 "Config", "Ss", "SsUi", "ToTitle", "Info", "Exit"
             };
         }
@@ -3149,6 +3531,7 @@ namespace GearMenu
                         "AAAAAElFTkSuQmCC"
                     );
                 }
+
                 return png;
             }
         }
