@@ -11,14 +11,14 @@ using System.Collections.Generic;
 // C:\Windows\Microsoft.NET\Framework\v3.5\csc.exe /o /t:library /lib:"..\COM3D2\Sybaris" /lib:"..\COM3D2\Sybaris\UnityInjector" /lib:"..\COM3D2\COM3D2x64_Data\Managed" /r:UnityEngine.dll /r:UnityEngine.VR.dll /r:UnityInjector.dll /r:Assembly-CSharp.dll /r:Assembly-CSharp-firstpass.dll /r:COM3D2.ExternalSaveData.Managed.dll /r:PluginExt.dll COM3D2.KissYourMaid.Plugin.cs
 
 [assembly: AssemblyTitle("KissYourMaid")]
-[assembly: AssemblyVersion("0.2.1.1")]
+[assembly: AssemblyVersion("0.2.1.2")]
 
 namespace COM3D2.KissYourMaid.Plugin
 {
     [
         PluginFilter("COM3D2x64"), PluginFilter("COM3D2VRx64"), PluginFilter("COM3D2OHx64"),
         PluginFilter("COM3D2OHVRx64"),
-        PluginName("KissYourMaid"), PluginVersion("0.2.1.1")
+        PluginName("KissYourMaid"), PluginVersion("0.2.1.2")
     ]
     public class KissYourMaid : ExPluginBase
     {
