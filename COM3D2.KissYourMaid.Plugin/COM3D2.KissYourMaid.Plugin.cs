@@ -11,14 +11,14 @@ using System.Collections.Generic;
 // C:\Windows\Microsoft.NET\Framework\v3.5\csc.exe /o /t:library /lib:"..\COM3D2\Sybaris" /lib:"..\COM3D2\Sybaris\UnityInjector" /lib:"..\COM3D2\COM3D2x64_Data\Managed" /r:UnityEngine.dll /r:UnityEngine.VR.dll /r:UnityInjector.dll /r:Assembly-CSharp.dll /r:Assembly-CSharp-firstpass.dll /r:COM3D2.ExternalSaveData.Managed.dll /r:PluginExt.dll COM3D2.KissYourMaid.Plugin.cs
 
 [assembly: AssemblyTitle("KissYourMaid")]
-[assembly: AssemblyVersion("0.2.1.2")]
+[assembly: AssemblyVersion("0.2.1.3")]
 
 namespace COM3D2.KissYourMaid.Plugin
 {
     [
         PluginFilter("COM3D2x64"), PluginFilter("COM3D2VRx64"), PluginFilter("COM3D2OHx64"),
         PluginFilter("COM3D2OHVRx64"),
-        PluginName("KissYourMaid"), PluginVersion("0.2.1.2")
+        PluginName("KissYourMaid"), PluginVersion("0.2.1.3")
     ]
     public class KissYourMaid : ExPluginBase
     {
@@ -32,20 +32,16 @@ namespace COM3D2.KissYourMaid.Plugin
             public KeyCode keyManualDecrease = KeyCode.Mouse0; //　（切替キーとの同時押し）おとなしめにする
 
             //　一般設定
+            public bool bPluginEnabled = true; //　本プラグインの有効状態（ALL）
 
-            public bool bPluginEnabled = true; //　本プラグインの有効状態（夜伽）
-            public bool bPluginEnabledInEdit = true; //　本プラグインの有効状態（エディット）
             public bool bVoiceOverrideEnabled = true; //　キス時の音声オーバライド（上書き）機能を使う
             public bool bDontLookAtMeInFellatio = false; //　フェラ時に目の追従を行わせない
+
+
             public int iYodareAppearLevel = 0; //　所定の興奮レベル以上でよだれをつける（１～４のどれかを入れる、０で無効）
             public int iExciteLevelThreshold1 = 150; //　興奮レベル１→２閾値
             public int iExciteLevelThreshold2 = 200; //　興奮レベル２→３閾値
             public int iExciteLevelThreshold3 = 250; //　興奮レベル３→４閾値
-
-            public bool bPluginValidADV = true; //  シーンID=15 (SceenADV)をすべて有効にする
-            public bool bPluginValidEvent = true; //  回想、訓練イベント、ライフモード等の会話系のシーンで有効にする
-            public bool bPluginValidPrivate = true; //  ホーム、プライベート、嫁イドイベントで有効にする
-            public bool bPluginValidGuest = true; //  ゲストモードで有効にする
 
             public int iFpsMax = 60; //最大Fps 処理間隔や表情変更の秒数に影響
             public int iFpsMaxVR = 90; //VRのFps 処理間隔や表情変更の秒数に影響
@@ -208,8 +204,7 @@ namespace COM3D2.KissYourMaid.Plugin
             public string[][] sLoopVoice30SadistExcite = new string[][]
             {
                 // g_rr_0003b (2219-2226) & g_rr_00084a (2227-2234)
-                new string[]
-                    { "s6_02219.ogg", "s6_02220.ogg", "s6_02221.ogg", "s6_02222.ogg" }, // g_rr_0003b.ks  の前半４つ
+                new string[] { "s6_02219.ogg", "s6_02220.ogg", "s6_02221.ogg", "s6_02222.ogg" }, // g_rr_0003b.ks  の前半４つ
                 new string[] { "s6_02227.ogg", "s6_02228.ogg", "s6_02229.ogg", "s6_02230.ogg" }, // g_rr_00084a.ks の前半４つ
                 new string[] { "s6_02223.ogg", "s6_02224.ogg", "s6_02225.ogg", "s6_02226.ogg" }, // g_rr_0003b.ks  の後半４つ
                 new string[] { "s6_02231.ogg", "s6_02232.ogg", "s6_02233.ogg", "s6_02234.ogg" }, // g_rr_00084a.ks の後半４つ
@@ -781,9 +776,6 @@ namespace COM3D2.KissYourMaid.Plugin
             public string[][] sLoopVoice30CustomKokanLv3 = new string[][] { };
         }
 
-
-        public bool bGlobalPluginEnabled = true;
-
         //カスタムボイス 内部格納用
         public string[][][] sLoopVoice30CustomExcite = null;
         public string[][][] sLoopVoice30CustomMune = null;
@@ -1051,6 +1043,29 @@ namespace COM3D2.KissYourMaid.Plugin
 
         public void Start()
         {
+            //　歯車ボタンの作成と除去
+            if (!gearMenuButton)
+            {
+                List<UIAtlas> uiAtlas = new List<UIAtlas>();
+                uiAtlas.AddRange(Resources.FindObjectsOfTypeAll<UIAtlas>());
+                UIAtlas uiAtlasPreset = uiAtlas.FirstOrDefault(a => a.name == "AtlasPreset");
+
+                // GearMenuを利用してシステムメニューにボタン追加
+                if (cfg.bPluginEnabled)
+                {
+                    gearMenuButton = GearMenu.Buttons.Add("KissYourMaid", "KissYourMaid", KissEnableIcon.Png,
+                        (go) => togglePluginEnabled());
+                    GearMenu.Buttons.SetText(gearMenuButton, "KissYourMaid is ON");
+                    buttonToggled = true;
+                }
+                else
+                {
+                    gearMenuButton = GearMenu.Buttons.Add("KissYourMaid", "KissYourMaid", KissDisableIcon.Png,
+                        (go) => togglePluginEnabled());
+                    GearMenu.Buttons.SetText(gearMenuButton, "KissYourMaid is OFF");
+                    buttonToggled = false;
+                }
+            }
         }
 
         public void OnDestroy()
@@ -1088,93 +1103,12 @@ namespace COM3D2.KissYourMaid.Plugin
             checkEditScene();
 
             //ダンス以外の他のシーンでも有効にする
-            if (!bIsEditScene && !bIsYotogiScene)
-            {
-                //シーン15を有効にする
-                if (cfg.bPluginValidADV && iSceneLevel == 15) bIsYotogiScene = true;
-
-                //ホーム + イベント
-                if (cfg.bPluginValidEvent)
-                {
-                    //回想 （Hイベント）
-                    if (iSceneLevel == 24) bIsYotogiScene = true;
-                }
-
-                //シーン15設定と異なる場合は有効状態変更
-                if (cfg.bPluginValidADV != cfg.bPluginValidEvent)
-                {
-                    //Hイベント&夜伽前会話:1→15 / ライフモード:81→15 / 訓練イベント:15→15 / イベント選択からの再生:42→15
-                    if (iSceneLevel == 15 && (iPrevSceneLevel == 1 || iPrevSceneLevel == 81 || iPrevSceneLevel == 15 ||
-                                              iPrevSceneLevel == 42)) bIsYotogiScene = cfg.bPluginValidEvent;
-                }
-
-                //プライベート + 嫁イド
-                if (cfg.bPluginValidPrivate)
-                {
-                    //ホーム:3 / 夜伽前会話:14 / プライベートモード:95
-                    if (iSceneLevel == 3 || iSceneLevel == 14 || iSceneLevel == 95) bIsYotogiScene = true;
-                }
-
-                //シーン15設定と異なる場合は有効状態変更
-                if (cfg.bPluginValidADV != cfg.bPluginValidPrivate)
-                {
-                    //プライベートモード:95→15 / 嫁イド挨拶(夜):3→15 / 夜伽後会話:14→15 /  嫁イド挨拶(朝):16→15
-                    if (iSceneLevel == 15 && (iPrevSceneLevel == 95 || iPrevSceneLevel == 3 || iPrevSceneLevel == 14 ||
-                                              iPrevSceneLevel == 16)) bIsYotogiScene = cfg.bPluginValidPrivate;
-                }
-
-                //ゲストモード
-                if (cfg.bPluginValidGuest)
-                {
-                    //ゲストモード:53
-                    if (iSceneLevel == 53) bIsYotogiScene = true;
-                }
-            }
+            // deleted
 
             //　各変数の初期化
             initTempVariables();
 
-
-            //　歯車ボタンの作成と除去
-            if (bIsYotogiScene || bIsEditScene)
-            {
-                //　作成
-                if (!gearMenuButton)
-                {
-                    List<UIAtlas> uiAtlas = new List<UIAtlas>();
-                    uiAtlas.AddRange(Resources.FindObjectsOfTypeAll<UIAtlas>());
-                    UIAtlas uiAtlasPreset = uiAtlas.FirstOrDefault(a => a.name == "AtlasPreset");
-
-                    // GearMenuを利用してシステムメニューにボタン追加
-                    if ((bIsYotogiScene && cfg.bPluginEnabled) ||
-                        (bIsEditScene && cfg.bPluginEnabledInEdit && cfg.bPluginEnabled))
-                    {
-                        gearMenuButton = GearMenu.Buttons.Add("KissYourMaid", "KissYourMaid", KissEnableIcon.Png,
-                            (go) => togglePluginEnabled());
-                        GearMenu.Buttons.SetText(gearMenuButton, "KissYourMaid is ON");
-                        buttonToggled = true;
-                    }
-                    else
-                    {
-                        gearMenuButton = GearMenu.Buttons.Add("KissYourMaid", "KissYourMaid", KissDisableIcon.Png,
-                            (go) => togglePluginEnabled());
-                        GearMenu.Buttons.SetText(gearMenuButton, "KissYourMaid is OFF");
-                        buttonToggled = false;
-                    }
-                }
-            }
-            else
-            {
-                //　除去
-                if (gearMenuButton)
-                {
-                    GearMenu.Buttons.Remove(gearMenuButton);
-                }
-            }
-
             if (iPrevSceneLevel != iSceneLevel) iPrevSceneLevel = iSceneLevel;
-
-            Console.WriteLine("[KissYourMaid] YotogiScene=" + bIsYotogiScene + " EditScene=" + bIsEditScene);
         }
 
         void initTempVariables()
@@ -1256,15 +1190,9 @@ namespace COM3D2.KissYourMaid.Plugin
                 }
             }
 
-            if (!bGlobalPluginEnabled)
-            {
-                return;
-            }
-
             //　プラグインが有効なシーンであるか判別する
             //　夜伽シーン・エディットモード・撮影モードのいずれかにあり、プラグインがEnabledであること（CBLはエディットが4？）
-            if ((bIsYotogiScene && cfg.bPluginEnabled) ||
-                (bIsEditScene && cfg.bPluginEnabledInEdit && cfg.bPluginEnabled))
+            if (cfg.bPluginEnabled)
             {
                 //　歯車ボタンの更新
                 setButtonState(true);
@@ -1702,69 +1630,19 @@ namespace COM3D2.KissYourMaid.Plugin
         }
 
 
-        private void updateGearMenuButton()
-        {
-            if (gearMenuButton == null) return;
-
-            UITexture componentInChildren = gearMenuButton.GetComponentInChildren<UITexture>();
-            Texture2D texture2D = componentInChildren.mainTexture as Texture2D;
-
-            if (bGlobalPluginEnabled)
-            {
-                GearMenu.Buttons.SetText(gearMenuButton, "KissYourMaid is ON");
-                texture2D.LoadImage(KissEnableIcon.Png);
-            }
-            else
-            {
-                GearMenu.Buttons.SetText(gearMenuButton, "KissYourMaid is OFF");
-                texture2D.LoadImage(KissDisableIcon.Png);
-            }
-
-            texture2D.Apply();
-        }
-
-
         //　プラグイン有効状態の変更と、プラグイン無効化時の処理
         private void togglePluginEnabled()
         {
             //　プラグイン有効状態の変更
-            bGlobalPluginEnabled = !bGlobalPluginEnabled;
 
-            // //　夜伽シーン
-            // if (bIsYotogiScene)
-            // {
-            //     cfg.bPluginEnabled = !cfg.bPluginEnabled;
-            //     if (cfg.bPluginEnabled)
-            //     {
-            //         Console.WriteLine("[KissYourMaid] Plugin Enabled.");
-            //     }
-            //     else
-            //     {
-            //         Console.WriteLine("[KissYourMaid] Plugin Disabled.");
-            //     }
-            //
-            // }
-            //
-            // //　エディットor撮影シーン
-            // if (bIsEditScene)
-            // {
-            //     cfg.bPluginEnabledInEdit = !cfg.bPluginEnabledInEdit;
-            //     if (cfg.bPluginEnabledInEdit)
-            //     {
-            //         Console.WriteLine("[KissYourMaid] Plugin Enabled.(EditMode)");
-            //     }
-            //     else
-            //     {
-            //         Console.WriteLine("[KissYourMaid] Plugin Disabled.(EditMode)");
-            //     }
-            //
-            // }
+            //　夜伽シーン
 
+            //　エディットor撮影シーン
 
             // プラグイン無効化時の処理
             if (sFaceAnimeBackup != "")
             {
-                if (!bGlobalPluginEnabled) // プラグインが無効化にされた場合
+                if (!cfg.bPluginEnabled) // プラグインが無効化にされた場合
                 {
                     //　痙攣用のアニメーション速度を戻してカウンタを無効化
                     AnimationState state = this.GetCurrentAnimationState(maid);
@@ -1815,6 +1693,8 @@ namespace COM3D2.KissYourMaid.Plugin
                     initTempVariables();
                 }
             }
+
+            cfg.bPluginEnabled = !cfg.bPluginEnabled;
         }
 
 
