@@ -10,6 +10,11 @@ The original plugin's turn-off behavior is complicated, so I made this fork, whi
 
 <br>
 
+For COM3D2 Only
+
+Tested in 2.42.1
+
+<br>
 
 The original author is unknown, this version is based on the modified version by @ankokusamochi
 
