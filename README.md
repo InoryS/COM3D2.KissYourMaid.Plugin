@@ -2,6 +2,15 @@
 
 This is a custom modified version
 
+<br>
+
+I enjoy kissing my maid in VR, but sometimes it gets interpreted as a kiss for no apparent reason.
+
+The original plugin's turn-off behavior is complicated, so I made this fork, which only uses the gear menu to control the plugin on and off. This way, you won't get kissed for no apparent reason.
+
+<br>
+
+
 The original author is unknown, this version is based on the modified version by @ankokusamochi
 
 <br>
